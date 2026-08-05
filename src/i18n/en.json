@@ -30,6 +30,11 @@
     "viewDocs": "Docs",
     "stars": "stars"
   },
+  "gitgraph": {
+    "kicker": "Git log",
+    "title": "The ODALX tree",
+    "subtitle": "Real commits from the three repositories — the laboratory, branch by branch."
+  },
   "mission": {
     "kicker": "The story",
     "title": "Why ODALX",

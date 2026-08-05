@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import avatar from '../assets/avatar.png';
+import Terminal from './Terminal.astro';
 import type { UI } from '../i18n';
 
 interface Props {
@@ -70,7 +71,7 @@ const buildingLines = ui.hero.building.map((line) => {
         </div>
       </div>
 
-      <div class="order-1 shrink-0 lg:order-2" data-reveal>
+      <div class="order-1 flex flex-col items-center gap-8 lg:order-2" data-reveal>
         <div
           class="rounded-full p-[3px]"
           style="background: linear-gradient(135deg, var(--color-cyan-glow), var(--color-violet-glow)); box-shadow: 0 0 44px -10px color-mix(in srgb, var(--color-cyan-glow) 40%, transparent);"
@@ -80,9 +81,12 @@ const buildingLines = ui.hero.building.map((line) => {
             alt="Luis Angel Valencia Valera"
             width={460}
             height={460}
-            sizes="(min-width: 1024px) 14rem, 9rem"
-            class="h-36 w-36 rounded-full object-cover lg:h-56 lg:w-56"
+            sizes="(min-width: 1024px) 10rem, 7rem"
+            class="h-28 w-28 rounded-full object-cover sm:h-32 sm:w-32 lg:h-40 lg:w-40"
           />
+        </div>
+        <div class="w-full max-w-[22rem] sm:max-w-[24rem]">
+          <Terminal />
         </div>
       </div>
     </div>

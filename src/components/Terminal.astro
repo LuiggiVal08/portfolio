@@ -1,0 +1,121 @@
+---
+
+
+
+---
+
+<div class="term" data-reveal aria-label="Terminal: whoami, ls products, git branch, git log">
+  <div class="term-bar">
+    <span class="term-dot term-dot-r"></span>
+    <span class="term-dot term-dot-y"></span>
+    <span class="term-dot term-dot-g"></span>
+    <span class="term-title">odalx@github:~/portfolio</span>
+  </div>
+  <div id="term-body" class="term-body" aria-hidden="true"></div>
+</div>
+
+<script>
+  var lines = [
+    { cmd: 'whoami' },
+    { html: '<span class="term-br">Luis Angel Valencia Valera</span> — Founder @ ODALX' },
+    { cmd: 'ls products/' },
+    { html: '<span class="term-dir">argos-ats/</span>  <span class="term-dir">toon-memory/</span>  <span class="term-dir">atrio-erp/</span>' },
+    { cmd: 'git branch -a' },
+    { html: '* <span class="term-br">main</span>        <span class="term-dim">→ portfolio OdalX</span>' },
+    { html: '  <span class="term-br">argos-ats</span>   <span class="term-dim">→ trading cuantitativo</span>' },
+    { html: '  <span class="term-br">toon-memory</span> <span class="term-dim">→ memoria para agentes IA</span>' },
+    { html: '  <span class="term-br">atrio-erp</span>   <span class="term-dim">→ en diseño</span>' },
+    { cmd: 'git log --oneline' },
+    { html: '<span class="term-dim">33k+ líneas de código · 2 motores · 22 agentes · 3 productos</span>' },
+  ];
+
+  (function () {
+    var body = document.getElementById('term-body');
+    if (!body) return;
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function newLine(className) {
+      var div = document.createElement('div');
+      div.className = className;
+      body.appendChild(div);
+      return div;
+    }
+
+    function addCursor() {
+      var p = document.createElement('span');
+      p.className = 'term-prompt';
+      p.textContent = 'odalx@github:~$ ';
+      body.appendChild(p);
+      var c = document.createElement('span');
+      c.className = 'cursor';
+      body.appendChild(c);
+    }
+
+    function renderInstant() {
+      lines.forEach(function (l) {
+        if (l.html) {
+          newLine('term-out').innerHTML = l.html;
+        } else {
+          var d = newLine('term-line');
+          d.innerHTML = '<span class="term-prompt">odalx@github:~$ </span><span class="term-cmd"></span>';
+          d.lastElementChild.textContent = l.cmd;
+        }
+      });
+      addCursor();
+    }
+
+    if (reduce) {
+      renderInstant();
+      return;
+    }
+
+    var i = 0;
+    var ci = 0;
+    var timer = null;
+
+    function step() {
+      if (i >= lines.length) {
+        addCursor();
+        return;
+      }
+      var l = lines[i];
+      if (l.html) {
+        newLine('term-out').innerHTML = l.html;
+        i += 1;
+        timer = setTimeout(step, 200);
+        return;
+      }
+      var d = newLine('term-line');
+      d.innerHTML = '<span class="term-prompt">odalx@github:~$ </span><span class="term-cmd"></span>';
+      var span = d.lastElementChild;
+      ci = 0;
+      (function type() {
+        if (ci <= l.cmd.length) {
+          span.textContent = l.cmd.slice(0, ci);
+          ci += 1;
+          timer = setTimeout(type, 45);
+        } else {
+          i += 1;
+          timer = setTimeout(step, 340);
+        }
+      })();
+    }
+
+    if ('IntersectionObserver' in window) {
+      var started = false;
+      var obs = new IntersectionObserver(
+        function (entries) {
+          if (entries.some(function (e) { return e.isIntersecting; }) && !started) {
+            started = true;
+            step();
+            obs.disconnect();
+          }
+        },
+        { rootMargin: '0px 0px -10% 0px' }
+      );
+      obs.observe(body);
+    } else {
+      step();
+    }
+  })();
+</script>
