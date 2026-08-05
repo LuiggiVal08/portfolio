@@ -153,8 +153,54 @@
 
       if (!isFinite(minY)) return;
 
+      var heroG = makeEl('g', { class: 'tree-group' });
+      var heroSeq = [];
+
+      heroSeq.push({
+        p: null,
+        dots: [makeEl('circle', {
+          cx: centerX, cy: 30, r: 5,
+          class: 'tree-commit tree-commit-trunk',
+        })],
+      });
+
+      function capsuleBranch(top, bottom, side, cy) {
+        var lane = centerX + side * 38;
+        var p = makeEl('path', {
+          d:
+            'M ' + centerX + ' ' + top +
+            ' C ' + (centerX + side * 24) + ' ' + top +
+            ', ' + lane + ' ' + (top + 10) +
+            ', ' + lane + ' ' + (top + 22) +
+            ' L ' + lane + ' ' + (bottom - 22) +
+            ' C ' + lane + ' ' + (bottom - 10) +
+            ', ' + (centerX + side * 24) + ' ' + bottom +
+            ', ' + centerX + ' ' + bottom,
+          class: 'tree-branch',
+        });
+        var pl = p.getTotalLength();
+        p.style.strokeDasharray = String(pl);
+        p.style.strokeDashoffset = String(pl);
+        return {
+          p: p,
+          dots: [makeEl('circle', {
+            cx: lane, cy: cy, r: 5,
+            class: 'tree-commit tree-commit-branch',
+          })],
+        };
+      }
+
+      heroSeq.push(capsuleBranch(56, 160, 1, 108));
+      heroSeq.push(capsuleBranch(80, 184, -1, 132));
+      heroSeq.push(capsuleBranch(672, 768, 1, 720));
+      heroSeq.push(capsuleBranch(700, 792, -1, 746));
+      heroSeq.push(capsuleBranch(812, 888, 1, 850));
+
+      S.appendChild(heroG);
+      sects.unshift({ sec: sections[0], g: heroG, seq: heroSeq });
+
       makeEl('path', {
-        d: 'M ' + centerX + ' ' + (minY - 40) + ' L ' + centerX + ' ' + (maxY + 60),
+        d: 'M ' + centerX + ' 24 L ' + centerX + ' ' + (maxY + 60),
         class: 'tree-trunk',
       });
 
