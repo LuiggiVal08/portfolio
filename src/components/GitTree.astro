@@ -206,10 +206,9 @@ var fDots = [];
                       ' C ' + f2 + ' ' + (fyy + 106) +
                       ', ' + (f1 + featSide * 18) + ' ' + (fyy + 120) +
                       ', ' + f1 + ' ' + (fyy + 120),
-                    class: 'tree-branch tree-branch-feature',
+                    class: 'tree-branch tree-branch-feature tree-branch-feature-sub',
                   });
                   var spl = subP.getTotalLength();
-                  subP.style.strokeDasharray = String(spl);
                   subP.style.strokeDashoffset = String(spl);
                   fDots.push(makeEl('circle', {
                     cx: f2, cy: fyy + 60, r: 4,

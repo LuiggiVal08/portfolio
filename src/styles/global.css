@@ -302,6 +302,12 @@
   filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-cyan-glow) 45%, transparent));
 }
 
+.tree-branch-feature-sub {
+  stroke: color-mix(in srgb, var(--color-violet-glow) 90%, transparent);
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-violet-glow) 45%, transparent));
+}
+
 .tree-commit {
   fill: #05060f;
   stroke-width: 1.5;
