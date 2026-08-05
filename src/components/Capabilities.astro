@@ -21,7 +21,7 @@ const { ui } = Astro.props;
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {
         ui.capabilities.items.map((item, i) => (
-          <div class="card glow-hover p-6" data-reveal style={`transition-delay: ${i * 70}ms`}>
+          <div class="card glow-hover p-6" data-reveal data-tree-anchor style={`transition-delay: ${i * 70}ms`}>
             <p class="font-mono text-xs text-slate-400 dark:text-slate-500">
               {String(i + 1).padStart(2, '0')}
             </p>
@@ -36,7 +36,7 @@ const { ui } = Astro.props;
       }
     </div>
 
-    <p class="mt-6 font-mono text-xs text-slate-500 dark:text-slate-400" data-reveal>
+    <p class="mt-6 font-mono text-xs text-slate-500 dark:text-slate-400" data-reveal data-tree-anchor>
       {ui.capabilities.note}
     </p>
   </div>

@@ -35,6 +35,7 @@ const repoBase = 'https://github.com/LuiggiVal08';
           <div
             class="group grid grid-cols-1 items-center gap-3 py-6 sm:grid-cols-[2.5rem_1fr_auto] sm:gap-6"
             data-reveal
+            data-tree-anchor
             style={`transition-delay: ${i * 70}ms`}
           >
             <span class="hidden font-mono text-xs text-slate-400 sm:block dark:text-slate-500">
@@ -76,7 +77,7 @@ const repoBase = 'https://github.com/LuiggiVal08';
       }
     </div>
 
-    <p class="mt-8 font-mono text-xs text-slate-500 dark:text-slate-400" data-reveal>
+    <p class="mt-8 font-mono text-xs text-slate-500 dark:text-slate-400" data-reveal data-tree-anchor>
       <a href={repoBase} target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-cyan-glow">
         github.com/LuiggiVal08 →
       </a>

@@ -12,7 +12,7 @@
     if (!svg) return;
     var S = svg;
     var NS = 'http://www.w3.org/2000/svg';
-    var K = 0.5523;
+    var A0 = 30;
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     function makeEl(name, attrs) {
@@ -50,6 +50,22 @@
       }, delayMs);
     }
 
+    function cluster(ys, tol) {
+      ys.sort(function (a, b) { return a - b; });
+      var out = [];
+      var cur = [ys[0]];
+      for (var i = 1; i < ys.length; i += 1) {
+        if (ys[i] - cur[cur.length - 1] < tol) {
+          cur.push(ys[i]);
+        } else {
+          out.push(cur.reduce(function (s, v) { return s + v; }, 0) / cur.length);
+          cur = [ys[i]];
+        }
+      }
+      out.push(cur.reduce(function (s, v) { return s + v; }, 0) / cur.length);
+      return out;
+    }
+
     function build() {
       while (S.firstChild) S.removeChild(S.firstChild);
 
@@ -66,7 +82,7 @@
       var contLeft = cont ? cont.getBoundingClientRect().left : Math.round(w * 0.08);
 
       var apexX = Math.round(contLeft - 8);
-      var lane = Math.min(88, apexX - 24);
+      var lane = Math.min(72, apexX - 24);
       var trunkX = apexX - lane;
 
       if (trunkX < 16) {
@@ -84,100 +100,114 @@
         class: 'tree-trunk',
       });
 
-      var R = lane;
-
-      function arcOut(y1) {
-        return (
-          'M ' + trunkX + ' ' + y1 +
-          ' C ' + (trunkX + K * R) + ' ' + y1 +
-          ', ' + apexX + ' ' + (y1 + R * (1 - K)) +
-          ', ' + apexX + ' ' + (y1 + R)
-        );
+      function anchorsOf(sec) {
+        var els = Array.prototype.slice.call(sec.querySelectorAll('[data-tree-anchor]'));
+        var ys = els.map(function (el) {
+          var r = el.getBoundingClientRect();
+          return r.top + sy + r.height / 2;
+        });
+        return ys.length ? cluster(ys, 80) : null;
       }
 
-      function arcIn(y2) {
-        return (
-          ' C ' + apexX + ' ' + (y2 - R * (1 - K)) +
-          ', ' + (trunkX + K * R) + ' ' + y2 +
-          ', ' + trunkX + ' ' + y2
-        );
+      var anchorSets = sections.map(anchorsOf);
+
+      function trunkNode(cy, big) {
+        return makeEl('circle', {
+          cx: trunkX, cy: Math.round(cy), r: big ? 5 : 4.5,
+          class: 'tree-commit tree-commit-trunk',
+        });
+      }
+
+      function branchNode(cy) {
+        return makeEl('circle', {
+          cx: apexX, cy: Math.round(cy), r: 4.5,
+          class: 'tree-commit tree-commit-branch',
+        });
       }
 
       var pairs = [];
+      var prevMerge = 0;
 
-      var hero = makeEl('g', { class: 'tree-group' });
-      var heroCommits = [
-        makeEl('circle', { cx: trunkX, cy: 64, r: 5, class: 'tree-commit tree-commit-trunk' }),
-        makeEl('circle', { cx: trunkX, cy: 220, r: 4.5, class: 'tree-commit tree-commit-trunk' }),
-      ];
-      S.appendChild(hero);
-      pairs.push({ sec: sections[0], g: hero, path: null, dots: heroCommits });
+      var heroG = makeEl('g', { class: 'tree-group' });
+      var heroDots = [];
+      if (anchorSets[0]) {
+        heroDots = anchorSets[0].map(function (cy) {
+          return trunkNode(cy, true);
+        });
+      }
+      S.appendChild(heroG);
+      pairs.push({ sec: sections[0], g: heroG, path: null, dots: heroDots });
 
       sections.slice(1).forEach(function (sec, idx) {
-        var r = sec.getBoundingClientRect();
-        var top = r.top + sy;
-        var h = r.height;
-
+        var i = idx + 1;
+        var A = anchorSets[i];
         var g = makeEl('g', { class: 'tree-group' });
         var path = null;
         var dots = [];
 
-        var y1 = top + 110;
-        var next = sections[idx + 2];
-        var maxEnd = next
-          ? next.getBoundingClientRect().top + sy + 110 - 70
-          : docH - 90;
-        var dy = Math.max(340, Math.min(760, maxEnd - y1));
-        var y2 = y1 + dy;
+        if (A && A.length) {
+          var y0 = A[0];
+          var y2 = A[A.length - 1];
+          var nextA = anchorSets[i + 1];
+          if (nextA && nextA.length) y2 = Math.min(y2, nextA[0] - 40);
+          if (prevMerge) y0 = Math.max(y0, prevMerge + 40);
 
-        var birth = makeEl('circle', {
-          cx: trunkX, cy: y1, r: 4.5,
-          class: 'tree-commit tree-commit-trunk',
-        });
+          var uStart = y0 + A0 + 26;
+          var uEnd = y2 - A0 - 26;
 
-        var gapDot = makeEl('circle', {
-          cx: trunkX, cy: top - 110, r: 4.5,
-          class: 'tree-commit tree-commit-trunk',
-        });
-        if (top - 110 < 40) gapDot.style.display = 'none';
+          var commits = A.slice(1, -1).filter(function (cy) {
+            return cy >= uStart && cy <= uEnd;
+          });
+          if (commits.length > 4) {
+            var stride = Math.ceil(commits.length / 4);
+            commits = commits.filter(function (_, k) { return k % stride === 0; });
+          }
 
-        path = makeEl('path', {
-          d: arcOut(y1) + ' L ' + apexX + ' ' + (y2 - R) + arcIn(y2),
-          class: 'tree-branch tree-draw',
-        });
-        var pl = path.getTotalLength();
-        path.style.strokeDasharray = String(pl);
-        path.style.strokeDashoffset = String(pl);
-
-        var uStart = y1 + R + 44;
-        var uEnd = y2 - R - 44;
-        var n = 3;
-        for (var c = 1; c <= n; c += 1) {
-          var cyc = uStart + ((uEnd - uStart) * c) / (n + 1);
-          dots.push(makeEl('circle', {
-            cx: apexX,
-            cy: cyc,
-            r: 5,
-            class: 'tree-commit tree-commit-branch',
-          }));
+          if (commits.length && y2 - y0 >= A0 * 2 + 120) {
+            path = makeEl('path', {
+              d:
+                'M ' + trunkX + ' ' + y0 +
+                ' C ' + (trunkX + lane * 0.5) + ' ' + y0 +
+                ', ' + apexX + ' ' + (y0 + A0 * 0.5) +
+                ', ' + apexX + ' ' + (y0 + A0) +
+                ' L ' + apexX + ' ' + (y2 - A0) +
+                ' C ' + apexX + ' ' + (y2 - A0 * 0.5) +
+                ', ' + (trunkX + lane * 0.5) + ' ' + y2 +
+                ', ' + trunkX + ' ' + y2,
+              class: 'tree-branch tree-draw',
+            });
+            var pl = path.getTotalLength();
+            path.style.strokeDasharray = String(pl);
+            path.style.strokeDashoffset = String(pl);
+            dots.push(trunkNode(y0, true));
+            dots = dots.concat(commits.map(branchNode));
+            dots.push(trunkNode(y2, true));
+          } else if (y2 - y0 >= 90) {
+            dots.push(trunkNode(y0, true));
+            dots.push(trunkNode(y2, false));
+          } else {
+            dots.push(trunkNode(y0, true));
+          }
+          prevMerge = y2;
+        } else {
+          var top = sec.getBoundingClientRect().top + sy;
+          dots.push(trunkNode(top + 110, true));
         }
 
         S.appendChild(g);
-        pairs.push({
-          sec: sec,
-          g: g,
-          path: path,
-          dots: dots.concat([birth, gapDot]),
-        });
+        pairs.push({ sec: sec, g: g, path: path, dots: dots });
       });
 
-      var tail = makeEl('g', { class: 'tree-group' });
-      var tailDot = makeEl('circle', {
-        cx: trunkX, cy: docH - 90, r: 4.5,
-        class: 'tree-commit tree-commit-trunk',
-      });
-      S.appendChild(tail);
-      pairs.push({ sec: sections[sections.length - 1], g: tail, path: null, dots: [tailDot] });
+      var prevMerge = 0;
+
+      var foot = document.querySelector('footer [data-tree-anchor]');
+      var tailG = makeEl('g', { class: 'tree-group' });
+      var tailY = foot
+        ? foot.getBoundingClientRect().top + sy + foot.getBoundingClientRect().height / 2
+        : docH - 90;
+      var tailDot = trunkNode(tailY, true);
+      S.appendChild(tailG);
+      pairs.push({ sec: sections[sections.length - 1], g: tailG, path: null, dots: [tailDot] });
 
       function drawAll() {
         pairs.forEach(function (p) {
