@@ -1,0 +1,62 @@
+{
+  "langLabel": "EN",
+  "nav": {
+    "projects": "Projects",
+    "skills": "Skills",
+    "contact": "Contact"
+  },
+  "hero": {
+    "eyebrow": "ODALX · Portfolio — 2026",
+    "signature": "by Luis Angel Valencia Valera",
+    "role": "Fullstack Developer",
+    "roles": ["Fullstack Developer", "JavaScript → TypeScript", "Node.js + React", "Backend & Frontend"],
+    "tagline": "I build tools for AI agents, trading bots and enterprise ERPs — with JavaScript, TypeScript, Node.js and React, from backend to frontend.",
+    "meta": ["23 years old", "Venezuela 🇻🇪", "JS → TS"],
+    "ctaProjects": "See projects",
+    "ctaContact": "Let's talk"
+  },
+  "projects": {
+    "kicker": "Featured work",
+    "title": "Projects",
+    "subtitle": "Three projects, one brand, no borders.",
+    "viewCode": "Code",
+    "viewDemo": "Demo",
+    "inDevelopment": "In development",
+    "stars": "stars"
+  },
+  "skills": {
+    "kicker": "Stack",
+    "title": "Skills",
+    "subtitle": "My specialty is JavaScript, evolving into TypeScript — on both frontend and backend.",
+    "groups": [
+      {
+        "label": "Frontend",
+        "items": ["React", "JavaScript (ES2023)", "TypeScript", "HTML & CSS", "Tailwind CSS"]
+      },
+      {
+        "label": "Backend",
+        "items": ["Node.js", "NestJS", "TypeScript", "REST APIs", "Microservices"]
+      },
+      {
+        "label": "Data & Infra",
+        "items": ["Redis", "Python", "WebSockets", "Docker", "Event-Driven"]
+      },
+      {
+        "label": "AI & Ecosystem",
+        "items": ["MCP", "AI Agents", "Keras / TensorFlow", "CLI Tools"]
+      }
+    ]
+  },
+  "contact": {
+    "kicker": "Contact",
+    "title": "Let's work together?",
+    "subtitle": "Write to Luis, founder of OdalX. I reply fast.",
+    "githubCta": "Follow on GitHub",
+    "handle": "LuiggiVal08"
+  },
+  "footer": {
+    "statement": "Built with JavaScript, engineered to scale.",
+    "line": "ODALX © 2026 · Luis Angel Valencia Valera",
+    "built": "Made with Astro · Deployed on GitHub Pages"
+  }
+}

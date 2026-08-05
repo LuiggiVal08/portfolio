@@ -1,0 +1,62 @@
+{
+  "langLabel": "ES",
+  "nav": {
+    "projects": "Proyectos",
+    "skills": "Habilidades",
+    "contact": "Contacto"
+  },
+  "hero": {
+    "eyebrow": "ODALX · Portafolio — 2026",
+    "signature": "por Luis Angel Valencia Valera",
+    "role": "Fullstack Developer",
+    "roles": ["Fullstack Developer", "JavaScript → TypeScript", "Node.js + React", "Backend & Frontend"],
+    "tagline": "Construyo herramientas para agentes de IA, bots de trading y ERPs empresariales — con JavaScript, TypeScript, Node.js y React, del backend al frontend.",
+    "meta": ["23 años", "Venezuela 🇻🇪", "JS → TS"],
+    "ctaProjects": "Ver proyectos",
+    "ctaContact": "Hablemos"
+  },
+  "projects": {
+    "kicker": "Trabajo destacado",
+    "title": "Proyectos",
+    "subtitle": "Tres proyectos, una marca, cero fronteras.",
+    "viewCode": "Código",
+    "viewDemo": "Demo",
+    "inDevelopment": "En desarrollo",
+    "stars": "estrellas"
+  },
+  "skills": {
+    "kicker": "Stack",
+    "title": "Habilidades",
+    "subtitle": "Mi especialidad es JavaScript, evolucionando a TypeScript — tanto en frontend como en backend.",
+    "groups": [
+      {
+        "label": "Frontend",
+        "items": ["React", "JavaScript (ES2023)", "TypeScript", "HTML & CSS", "Tailwind CSS"]
+      },
+      {
+        "label": "Backend",
+        "items": ["Node.js", "NestJS", "TypeScript", "REST APIs", "Microservicios"]
+      },
+      {
+        "label": "Datos & Infra",
+        "items": ["Redis", "Python", "WebSockets", "Docker", "Event-Driven"]
+      },
+      {
+        "label": "IA & Ecosistema",
+        "items": ["MCP", "Agentes de IA", "Keras / TensorFlow", "CLI Tools"]
+      }
+    ]
+  },
+  "contact": {
+    "kicker": "Contacto",
+    "title": "¿Trabajamos juntos?",
+    "subtitle": "Escríbele a Luis, fundador de OdalX. Respondo rápido.",
+    "githubCta": "Seguir en GitHub",
+    "handle": "LuiggiVal08"
+  },
+  "footer": {
+    "statement": "Construido con JavaScript, pensado en grande.",
+    "line": "ODALX © 2026 · Luis Angel Valencia Valera",
+    "built": "Hecho con Astro · Desplegado en GitHub Pages"
+  }
+}

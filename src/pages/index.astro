@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import Projects from '../components/Projects.astro';
+import Skills from '../components/Skills.astro';
+import Contact from '../components/Contact.astro';
+import { getUI } from '../i18n';
+
+const ui = getUI('es');
+---
+
+<BaseLayout
+  lang="es"
+  title="ODALX — Luis Angel Valencia Valera · Fullstack Developer"
+  description="Portafolio de Luis Angel Valencia Valera, fundador de OdalX. Desarrollador fullstack — JavaScript, TypeScript, Node.js y React. Proyectos: toon-memory, argos-ats, atrio-erp."
+  ui={ui}
+>
+  <Hero ui={ui} />
+  <Projects ui={ui} lang="es" />
+  <Skills ui={ui} />
+  <Contact ui={ui} />
+</BaseLayout>

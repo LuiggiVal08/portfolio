@@ -1,0 +1,106 @@
+---
+import '../styles/global.css';
+import type { Locale, UI } from '../i18n';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  lang: Locale;
+  title: string;
+  description: string;
+  ui: UI;
+}
+
+const { lang, title, description, ui } = Astro.props;
+
+const base = import.meta.env.BASE_URL;
+const home = base.endsWith('/') ? base : `${base}/`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(`${home}favicon.svg`, Astro.site);
+const hrefLang = lang === 'es' ? 'es' : 'en';
+---
+
+<!doctype html>
+<html lang={hrefLang} class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href={`${home}favicon.svg`} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="es" href={new URL(home, Astro.site)} />
+    <link rel="alternate" hreflang="en" href={new URL(`${home}en/`, Astro.site)} />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#05060f" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={hrefLang === 'es' ? 'es_VE' : 'en_US'} />
+    <meta property="og:locale:alternate" content={hrefLang === 'es' ? 'en_US' : 'es_VE'} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script is:inline>
+      (function () {
+        var stored = localStorage.getItem('odalx-theme');
+        var dark = stored ? stored === 'dark' : true;
+        document.documentElement.classList.toggle('dark', dark);
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', dark ? '#05060f' : '#f8fafc');
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
+      <div class="absolute inset-0 bloom-cyan opacity-0 transition-opacity duration-500 dark:opacity-100"></div>
+      <div class="absolute inset-0 bloom-violet opacity-0 transition-opacity duration-500 dark:opacity-100"></div>
+    </div>
+
+    <div class="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[60vh] grid-bg opacity-0 dark:opacity-100" aria-hidden="true"></div>
+
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-cyan-glow focus:px-4 focus:py-2 focus:font-semibold focus:text-ink-950"
+    >
+      Saltar al contenido · Skip to content
+    </a>
+
+    <Header ui={ui} lang={lang} />
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <Footer ui={ui} />
+
+    <script is:inline>
+      (function () {
+        if (!('IntersectionObserver' in window)) return;
+        var observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+        );
+        document.querySelectorAll('[data-reveal]').forEach(function (el) {
+          observer.observe(el);
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,234 @@
+/* Hallmark · genre: atmospheric · macrostructure: Portfolio Grid · theme: custom (OdalX brand) · enrichment: none · nav: N5 · footer: Ft5 */
+
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-ink-950: #05060f;
+  --color-ink-900: #0a0c1a;
+  --color-ink-800: #10132a;
+  --color-ink-700: #1a1f3d;
+
+  --color-cyan-glow: #22d3ee;
+  --color-violet-glow: #a78bfa;
+
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    overflow-x: clip;
+  }
+
+  body {
+    overflow-x: clip;
+    @apply bg-ink-950 font-body text-slate-300 antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .dark body {
+    @apply bg-ink-950 text-slate-300;
+  }
+
+  :root:not(.dark) body {
+    @apply bg-slate-50 text-slate-600;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-cyan-glow) 28%, transparent);
+  }
+
+  .dark ::selection {
+    background-color: color-mix(in srgb, var(--color-cyan-glow) 30%, transparent);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display font-bold tracking-tight text-slate-900;
+  }
+
+  .dark h1,
+  .dark h2,
+  .dark h3,
+  .dark h4 {
+    @apply text-white;
+  }
+}
+
+@layer components {
+  .container-x {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+  }
+
+  .eyebrow {
+    @apply font-mono text-xs font-medium uppercase tracking-[0.22em] text-cyan-glow;
+  }
+
+  .dark .eyebrow {
+    color: var(--color-cyan-glow);
+  }
+
+  .card {
+    @apply rounded-2xl border border-slate-900/10 bg-white;
+    box-shadow: 0 1px 2px rgb(2 6 23 / 0.05);
+  }
+
+  .dark .card {
+    @apply border-white/8 bg-ink-800/70;
+    box-shadow: 0 1px 2px rgb(2 6 23 / 0.4);
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full font-body font-semibold transition-all duration-200;
+  }
+
+  .btn-primary {
+    @apply bg-cyan-glow text-ink-950;
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 0 34px -6px color-mix(in srgb, var(--color-cyan-glow) 55%, transparent);
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost {
+    @apply border border-slate-900/15 bg-white text-slate-800;
+  }
+
+  .btn-ghost:hover {
+    @apply border-cyan-glow/50 text-cyan-glow;
+  }
+
+  .dark .btn-ghost {
+    @apply border-white/15 bg-white/5 text-slate-200;
+  }
+
+  .dark .btn-ghost:hover {
+    @apply border-cyan-glow/60 text-cyan-glow;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-slate-900/10 bg-slate-100 px-3 py-1 font-mono text-xs text-slate-600;
+  }
+
+  .dark .chip {
+    @apply border-white/10 bg-white/5 text-slate-300;
+  }
+
+  .tag {
+    @apply rounded-md border border-slate-900/10 bg-slate-100 px-2 py-0.5 font-mono text-[0.7rem] text-slate-600;
+  }
+
+  .dark .tag {
+    @apply border-white/8 bg-white/5 text-slate-400;
+  }
+
+  .link-arrow {
+    @apply inline-flex items-center gap-1.5 font-semibold text-cyan-glow transition-transform duration-200;
+  }
+
+  .link-arrow:hover {
+    transform: translateX(3px);
+  }
+
+  .link-arrow:hover .arrow {
+    transform: translateX(2px);
+  }
+
+  .arrow {
+    transition: transform 0.2s ease;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+
+  .wordmark {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .display-xl {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+    font-size: clamp(3.5rem, 12vw, 8.5rem);
+  }
+
+  .text-accent {
+    color: var(--color-cyan-glow);
+  }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(to right, rgb(148 163 184 / 0.07) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(148 163 184 / 0.07) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 40%, transparent 100%);
+  }
+
+  .bloom-cyan {
+    background: radial-gradient(ellipse 45% 40% at 18% -5%, color-mix(in srgb, var(--color-cyan-glow) 14%, transparent), transparent 70%);
+  }
+
+  .bloom-violet {
+    background: radial-gradient(ellipse 45% 40% at 85% 110%, color-mix(in srgb, var(--color-violet-glow) 14%, transparent), transparent 70%);
+  }
+
+  .glow-hover {
+    transition:
+      transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.25s ease,
+      border-color 0.25s ease;
+  }
+
+  .glow-hover:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--color-cyan-glow) 35%, transparent);
+    box-shadow:
+      0 18px 44px -18px rgb(2 6 23 / 0.55),
+      0 0 38px -10px color-mix(in srgb, var(--color-cyan-glow) 30%, transparent);
+  }
+
+  .dark .glow-hover:hover {
+    box-shadow:
+      0 18px 44px -18px rgb(2 6 23 / 0.85),
+      0 0 38px -10px color-mix(in srgb, var(--color-cyan-glow) 32%, transparent);
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+[data-reveal] {
+  opacity: 0;
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  [data-reveal] {
+    opacity: 1;
+    transition: none;
+  }
+}
