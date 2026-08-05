@@ -70,29 +70,66 @@
 
         items.forEach(function (item) {
           var r = item.getBoundingClientRect();
-          var cy = r.top + sy + r.height / 2;
+          var top = r.top + sy;
+          var bot = r.bottom + sy;
+          var cy = top + r.height / 2;
           var side = r.left + r.width / 2 < centerX ? -1 : 1;
+          var laneX = centerX + side * 22;
           var edgeX = side < 0 ? r.right + 14 : r.left - 14;
-          var ctrl = centerX + side * Math.min(30, Math.abs(edgeX - centerX) * 0.45);
 
-          var p = makeEl('path', {
-            d: 'M ' + centerX + ' ' + cy + ' Q ' + ctrl + ' ' + cy + ' ' + edgeX + ' ' + cy,
-            class: 'tree-branch',
-          });
-          var pl = p.getTotalLength();
-          p.style.strokeDasharray = String(pl);
-          p.style.strokeDashoffset = String(pl);
+          if (r.height < 200) {
+            var tp = makeEl('path', {
+              d: 'M ' + centerX + ' ' + cy + ' Q ' + (centerX + side * 24) + ' ' + cy + ' ' + edgeX + ' ' + cy,
+              class: 'tree-branch',
+            });
+            var tpl = tp.getTotalLength();
+            tp.style.strokeDasharray = String(tpl);
+            tp.style.strokeDashoffset = String(tpl);
+            seq.push({
+              paths: [tp],
+              dots: [
+                makeEl('circle', { cx: centerX, cy: cy, r: 5, class: 'tree-commit tree-commit-trunk' }),
+                makeEl('circle', { cx: edgeX, cy: cy, r: 3.5, class: 'tree-commit tree-commit-branch' }),
+              ],
+            });
+          } else {
+            var lp = makeEl('path', {
+              d:
+                'M ' + centerX + ' ' + top +
+                ' C ' + (centerX + side * 16) + ' ' + top +
+                ', ' + laneX + ' ' + (top + 8) +
+                ', ' + laneX + ' ' + (top + 18) +
+                ' L ' + laneX + ' ' + (bot - 18) +
+                ' C ' + laneX + ' ' + (bot - 8) +
+                ', ' + (centerX + side * 16) + ' ' + bot +
+                ', ' + centerX + ' ' + bot,
+              class: 'tree-branch',
+            });
+            var lpl = lp.getTotalLength();
+            lp.style.strokeDasharray = String(lpl);
+            lp.style.strokeDashoffset = String(lpl);
 
-          var trunkDot = makeEl('circle', {
-            cx: centerX, cy: cy, r: 5,
-            class: 'tree-commit tree-commit-trunk',
-          });
-          var edgeDot = makeEl('circle', {
-            cx: edgeX, cy: cy, r: 4,
-            class: 'tree-commit tree-commit-branch',
-          });
+            var ep = makeEl('path', {
+              d: 'M ' + laneX + ' ' + cy + ' Q ' + ((laneX + edgeX) / 2) + ' ' + cy + ' ' + edgeX + ' ' + cy,
+              class: 'tree-branch',
+            });
+            var epl = ep.getTotalLength();
+            ep.style.strokeDasharray = String(epl);
+            ep.style.strokeDashoffset = String(epl);
 
-          seq.push({ p: p, dots: [trunkDot, edgeDot] });
+            var ldots = [
+              makeEl('circle', { cx: centerX, cy: top, r: 4.5, class: 'tree-commit tree-commit-trunk' }),
+              makeEl('circle', { cx: laneX, cy: cy, r: 5, class: 'tree-commit tree-commit-branch' }),
+              makeEl('circle', { cx: laneX, cy: bot, r: 4.5, class: 'tree-commit tree-commit-trunk' }),
+            ];
+            if (r.height >= 360) {
+              ldots.push(makeEl('circle', { cx: laneX, cy: top + r.height * 0.32, r: 4, class: 'tree-commit tree-commit-branch' }));
+              ldots.push(makeEl('circle', { cx: laneX, cy: bot - r.height * 0.32, r: 4, class: 'tree-commit tree-commit-branch' }));
+            }
+            ldots.push(makeEl('circle', { cx: edgeX, cy: cy, r: 3.5, class: 'tree-commit tree-commit-branch' }));
+
+            seq.push({ paths: [lp, ep], dots: ldots });
+          }
           if (cy < firstY) firstY = cy;
           if (cy > lastY) lastY = cy;
         });
@@ -102,47 +139,6 @@
         if (firstY < minY) minY = firstY;
         if (lastY > maxY) maxY = lastY;
       });
-
-      for (var gi = 1; gi < sects.length; gi += 1) {
-        var prev = sects[gi - 1];
-        var next = sects[gi];
-        var leave = prev.lastY;
-        var merge = next.firstY;
-        if (merge - leave < 140) continue;
-
-        var gside = gi % 2 === 1 ? 1 : -1;
-        var laneX = centerX + gside * 22;
-
-        var gp = makeEl('path', {
-          d:
-            'M ' + centerX + ' ' + leave +
-            ' C ' + (centerX + gside * 16) + ' ' + leave +
-            ', ' + laneX + ' ' + (leave + 12) +
-            ', ' + laneX + ' ' + (leave + 22) +
-            ' L ' + laneX + ' ' + (merge - 22) +
-            ' C ' + laneX + ' ' + (merge - 12) +
-            ', ' + (centerX + gside * 16) + ' ' + merge +
-            ', ' + centerX + ' ' + merge,
-          class: 'tree-branch',
-        });
-        var gpl = gp.getTotalLength();
-        gp.style.strokeDasharray = String(gpl);
-        gp.style.strokeDashoffset = String(gpl);
-
-        var gdots = [];
-        var gn = gi % 2 === 0 ? 2 : 1;
-        for (var k = 0; k < gn; k += 1) {
-          var gy = leave + 44 + k * 52;
-          if (gy <= merge - 40) {
-            gdots.push(makeEl('circle', {
-              cx: laneX, cy: gy, r: 4.5,
-              class: 'tree-commit tree-commit-branch',
-            }));
-          }
-        }
-
-        next.seq.unshift({ p: gp, dots: gdots });
-      }
 
       if (!isFinite(minY)) return;
 
@@ -154,7 +150,9 @@
       function drawAll() {
         sects.forEach(function (pair) {
           pair.seq.forEach(function (s) {
-            s.p.style.strokeDashoffset = '0';
+            s.paths.forEach(function (pp) {
+              pp.style.strokeDashoffset = '0';
+            });
             s.dots.forEach(function (d) {
               d.style.opacity = '1';
             });
@@ -183,25 +181,27 @@
             obs.unobserve(en.target);
 
             hit.seq.forEach(function (s, i) {
-              setTimeout(function () {
-                var from = parseFloat(s.p.style.strokeDashoffset);
-                var start = null;
-                function tick(now) {
-                  if (start === null) start = now;
-                  var t = Math.min(1, (now - start) / 700);
-                  s.p.style.strokeDashoffset = String(from * (1 - easeOutCubic(t)));
-                  if (t < 1) {
-                    requestAnimationFrame(tick);
-                  } else {
-                    s.dots.forEach(function (d, j) {
-                      setTimeout(function () {
-                        d.style.opacity = '1';
-                      }, 120 + j * 110);
-                    });
+              s.paths.forEach(function (pp, pi) {
+                setTimeout(function () {
+                  var from = parseFloat(pp.style.strokeDashoffset);
+                  var start = null;
+                  function tick(now) {
+                    if (start === null) start = now;
+                    var t = Math.min(1, (now - start) / 700);
+                    pp.style.strokeDashoffset = String(from * (1 - easeOutCubic(t)));
+                    if (t < 1) {
+                      requestAnimationFrame(tick);
+                    } else if (pi === s.paths.length - 1) {
+                      s.dots.forEach(function (d, j) {
+                        setTimeout(function () {
+                          d.style.opacity = '1';
+                        }, 120 + j * 110);
+                      });
+                    }
                   }
-                }
-                requestAnimationFrame(tick);
-              }, i * 160);
+                  requestAnimationFrame(tick);
+                }, i * 160 + pi * 200);
+              });
             });
           });
         },
