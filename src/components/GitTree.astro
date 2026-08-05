@@ -154,11 +154,11 @@
                 var cardR = r.left + r.width;
                 var voidW = featSide > 0 ? voxR - cardR : cardL - voxL;
                 var f1 = featSide > 0
-                  ? cardR + voidW * 0.16
-                  : cardL - voidW * 0.16;
+                  ? cardR + 30
+                  : cardL - 30;
                 var f2 = featSide > 0
-                  ? cardR + voidW * 0.34
-                  : cardL - voidW * 0.34;
+                  ? cardR + 30 + Math.min(78, voidW * 0.28)
+                  : cardL - 30 - Math.min(78, voidW * 0.28);
                 if (voidW < 140) {
                   f1 = centerX + featSide * 60;
                   f2 = centerX + featSide * 110;
@@ -182,8 +182,8 @@
 
                 var fDots = [];
                 var mainYs = [];
-                for (var mk = 1; mk <= 3; mk += 1) {
-                  mainYs.push(fyT + (seg * mk) / 4);
+                for (var mk = 1; mk <= 4; mk += 1) {
+                  mainYs.push(fyT + (seg * mk) / 5);
                 }
                 mainYs.forEach(function (y) {
                   fDots.push(makeEl('circle', {
@@ -194,7 +194,8 @@
 
                 seq.push({ p: mainP, dots: fDots });
 
-                var subYs = [fyT + seg * 0.3, fyT + seg * 0.62];
+                var subYs = [fyT + seg * 0.24, fyT + seg * 0.5, fyT + seg * 0.76];
+                var subStates = [];
                 subYs.forEach(function (fyy) {
                   var subP = makeEl('path', {
                     d:
