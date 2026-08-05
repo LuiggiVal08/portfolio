@@ -1,4 +1,6 @@
 ---
+import { Image } from 'astro:assets';
+import avatar from '../assets/avatar.png';
 import type { UI } from '../i18n';
 import Rotator from './Rotator.tsx';
 
@@ -11,7 +13,8 @@ const { ui } = Astro.props;
 
 <section class="relative flex min-h-svh flex-col justify-center overflow-hidden">
   <div class="container-x pt-28 pb-16 sm:pt-32">
-    <div class="flex flex-col items-start gap-8 lg:max-w-4xl">
+    <div class="flex flex-col items-center gap-12 lg:flex-row lg:items-center lg:justify-between">
+      <div class="order-2 flex flex-col items-start gap-8 lg:order-1 lg:max-w-4xl">
       <p class="eyebrow" data-reveal>{ui.hero.eyebrow}</p>
 
       <div class="flex flex-wrap items-end gap-x-6 gap-y-2" data-reveal>
@@ -48,6 +51,23 @@ const { ui } = Astro.props;
         <a href="#contacto" class="btn btn-ghost px-6 py-3 text-sm">
           {ui.hero.ctaContact}
         </a>
+      </div>
+    </div>
+
+    <div class="order-1 shrink-0 lg:order-2" data-reveal>
+        <div
+          class="rounded-full p-[3px]"
+          style="background: linear-gradient(135deg, var(--color-cyan-glow), var(--color-violet-glow)); box-shadow: 0 0 44px -10px color-mix(in srgb, var(--color-cyan-glow) 40%, transparent);"
+        >
+          <Image
+            src={avatar}
+            alt="Luis Angel Valencia Valera"
+            width={460}
+            height={460}
+            sizes="(min-width: 1024px) 14rem, 9rem"
+            class="h-36 w-36 rounded-full object-cover lg:h-56 lg:w-56"
+          />
+        </div>
       </div>
     </div>
   </div>
