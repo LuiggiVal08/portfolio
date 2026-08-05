@@ -296,6 +296,12 @@
   stroke-width: 1.5;
 }
 
+.tree-branch-feature {
+  stroke: color-mix(in srgb, var(--color-cyan-glow) 85%, transparent);
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-cyan-glow) 45%, transparent));
+}
+
 .tree-commit {
   fill: #05060f;
   stroke-width: 1.5;
@@ -313,6 +319,11 @@
 
 .tree-commit-branch {
   stroke: color-mix(in srgb, var(--color-cyan-glow) 55%, transparent);
+}
+
+.tree-commit-feature {
+  stroke: var(--color-cyan-glow);
+  stroke-width: 2;
 }
 
 @media (prefers-reduced-motion: reduce) {
