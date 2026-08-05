@@ -138,6 +138,73 @@
                 class: 'tree-commit tree-commit-branch',
               }));
             });
+
+            if (item.tagName === 'ARTICLE') {
+              var featSide = r.left + r.width / 2 <= centerX ? 1 : -1;
+              var fyT = absTop + 60;
+              var fyB = absBottom - 40;
+              var seg = fyB - fyT;
+
+              if (seg > 160) {
+                var f1 = centerX + featSide * 70;
+                var f2 = centerX + featSide * 132;
+
+                var mainP = makeEl('path', {
+                  d:
+                    'M ' + centerX + ' ' + fyT +
+                    ' C ' + (centerX + featSide * 26) + ' ' + fyT +
+                    ', ' + f1 + ' ' + (fyT + 12) +
+                    ', ' + f1 + ' ' + (fyT + 24) +
+                    ' L ' + f1 + ' ' + (fyB - 24) +
+                    ' C ' + f1 + ' ' + (fyB - 12) +
+                    ', ' + (centerX + featSide * 26) + ' ' + fyB +
+                    ', ' + centerX + ' ' + fyB,
+                  class: 'tree-branch',
+                });
+                var mpl = mainP.getTotalLength();
+                mainP.style.strokeDasharray = String(mpl);
+                mainP.style.strokeDashoffset = String(mpl);
+
+                var fDots = [];
+                var mainYs = [];
+                for (var mk = 1; mk <= 3; mk += 1) {
+                  mainYs.push(fyT + (seg * mk) / 4);
+                }
+                mainYs.forEach(function (y) {
+                  fDots.push(makeEl('circle', {
+                    cx: f1, cy: y, r: 4.5,
+                    class: 'tree-commit tree-commit-branch',
+                  }));
+                });
+
+                seq.push({ p: mainP, dots: fDots });
+
+                var subYs = [fyT + seg * 0.3, fyT + seg * 0.62];
+                subYs.forEach(function (fyy) {
+                  var subP = makeEl('path', {
+                    d:
+                      'M ' + f1 + ' ' + fyy +
+                      ' C ' + (f1 + featSide * 18) + ' ' + fyy +
+                      ', ' + f2 + ' ' + (fyy + 14) +
+                      ', ' + f2 + ' ' + (fyy + 24) +
+                      ' L ' + f2 + ' ' + (fyy + 96) +
+                      ' C ' + f2 + ' ' + (fyy + 106) +
+                      ', ' + (f1 + featSide * 18) + ' ' + (fyy + 120) +
+                      ', ' + f1 + ' ' + (fyy + 120),
+                    class: 'tree-branch',
+                  });
+                  var spl = subP.getTotalLength();
+                  subP.style.strokeDasharray = String(spl);
+                  subP.style.strokeDashoffset = String(spl);
+                  fDots.push(makeEl('circle', {
+                    cx: f2, cy: fyy + 60, r: 4,
+                    class: 'tree-commit tree-commit-branch',
+                  }));
+                  seq.push({ p: subP, dots: [] });
+                });
+
+              }
+            }
           }
 
           seq.push({ p: path, dots: dots });
@@ -190,11 +257,11 @@
         };
       }
 
-      heroSeq.push(capsuleBranch(56, 160, 1, 108));
-      heroSeq.push(capsuleBranch(80, 184, -1, 132));
-      heroSeq.push(capsuleBranch(672, 768, 1, 720));
-      heroSeq.push(capsuleBranch(700, 792, -1, 746));
-      heroSeq.push(capsuleBranch(812, 888, 1, 850));
+      heroSeq.push(capsuleBranch(56, 214, 1, 108));
+      heroSeq.push(capsuleBranch(80, 214, -1, 146));
+      heroSeq.push(capsuleBranch(650, 828, 1, 716));
+      heroSeq.push(capsuleBranch(668, 856, -1, 762));
+      heroSeq.push(capsuleBranch(760, 894, 1, 820));
 
       S.appendChild(heroG);
       sects.unshift({ sec: sections[0], g: heroG, seq: heroSeq });
