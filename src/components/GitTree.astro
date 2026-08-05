@@ -180,10 +180,10 @@
                 mainP.style.strokeDasharray = String(mpl);
                 mainP.style.strokeDashoffset = String(mpl);
 
-                var fDots = [];
+var fDots = [];
                 var mainYs = [];
-                for (var mk = 1; mk <= 4; mk += 1) {
-                  mainYs.push(fyT + (seg * mk) / 5);
+                for (var mk = 1; mk <= 6; mk += 1) {
+                  mainYs.push(fyT + (seg * mk) / 7);
                 }
                 mainYs.forEach(function (y) {
                   fDots.push(makeEl('circle', {
@@ -194,8 +194,7 @@
 
                 seq.push({ p: mainP, dots: fDots });
 
-                var subYs = [fyT + seg * 0.24, fyT + seg * 0.5, fyT + seg * 0.76];
-                var subStates = [];
+                var subYs = [fyT + seg * 0.14, fyT + seg * 0.3, fyT + seg * 0.46, fyT + seg * 0.62, fyT + seg * 0.78, fyT + seg * 0.9];
                 subYs.forEach(function (fyy) {
                   var subP = makeEl('path', {
                     d:
