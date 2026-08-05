@@ -6,14 +6,19 @@ const projects = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content' }),
   schema: z.object({
     title: z.string(),
+    tagline: z.string(),
     description: z.string(),
-    longDescription: z.string().optional(),
     tags: z.array(z.string()),
     repo: z.string().url(),
     demo: z.string().url().optional(),
     stars: z.number().optional(),
-    featured: z.boolean().default(false),
-    status: z.enum(['published', 'in-development']).default('published'),
+    status: z.enum(['published', 'in-development']),
+    metrics: z
+      .array(z.object({ value: z.string(), label: z.string() }))
+      .default([]),
+    architecture: z.array(z.string()).default([]),
+    features: z.array(z.string()).default([]),
+    milestones: z.array(z.object({ label: z.string(), done: z.boolean() })).default([]),
   }),
 });
 

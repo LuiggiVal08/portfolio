@@ -2,59 +2,75 @@
 import { Image } from 'astro:assets';
 import avatar from '../assets/avatar.png';
 import type { UI } from '../i18n';
-import Rotator from './Rotator.tsx';
 
 interface Props {
   ui: UI;
 }
 
 const { ui } = Astro.props;
+
+const buildingLines = ui.hero.building.map((line) => {
+  const [verb, ...rest] = line.split(' ');
+  return { verb, rest: rest.join(' ') };
+});
 ---
 
 <section class="relative flex min-h-svh flex-col justify-center overflow-hidden">
   <div class="container-x pt-28 pb-16 sm:pt-32">
     <div class="flex flex-col items-center gap-12 lg:flex-row lg:items-center lg:justify-between">
-      <div class="order-2 flex flex-col items-start gap-8 lg:order-1 lg:max-w-4xl">
-      <p class="eyebrow" data-reveal>{ui.hero.eyebrow}</p>
+      <div class="order-2 flex flex-col items-start gap-7 lg:order-1 lg:max-w-4xl">
+        <p class="eyebrow" data-reveal>{ui.hero.eyebrow}</p>
 
-      <div class="flex flex-wrap items-end gap-x-6 gap-y-2" data-reveal>
-        <h1 class="display-xl text-slate-900 dark:text-white">
-          ODALX<span class="text-accent">.</span>
-        </h1>
-        <p class="mb-3 max-w-[16rem] font-mono text-sm text-slate-500 dark:text-slate-400">
-          {ui.hero.signature}
-        </p>
-      </div>
+        <div class="flex flex-wrap items-end gap-x-6 gap-y-2" data-reveal>
+          <h1 class="display-xl text-slate-900 dark:text-white">
+            ODALX<span class="text-accent">.</span>
+          </h1>
+        </div>
 
-      <div class="flex flex-col gap-3" data-reveal>
-        <h2 class="font-display text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-          {ui.hero.role}: <Rotator client:load roles={ui.hero.roles} />
-        </h2>
-        <p class="max-w-xl text-base leading-relaxed text-slate-600 dark:text-slate-300 sm:text-lg">
+        <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 font-mono text-sm" data-reveal>
+          <span class="text-accent">{ui.hero.founder}</span>
+          <span class="text-slate-500 dark:text-slate-400">— {ui.hero.signature}</span>
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          {
+            buildingLines.map((line, i) => (
+              <p
+                class="font-display text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl dark:text-white"
+                data-reveal
+                style={`transition-delay: ${i * 90 + 60}ms`}
+              >
+                <span class="text-accent">{line.verb}</span> {line.rest}
+              </p>
+            ))
+          }
+        </div>
+
+        <p class="max-w-xl text-base leading-relaxed text-slate-600 dark:text-slate-300 sm:text-lg" data-reveal>
+          <span class="font-semibold text-slate-900 dark:text-white">{ui.hero.valueProp}</span>{' '}
           {ui.hero.tagline}
         </p>
+
+        <div class="flex flex-wrap items-center gap-3" data-reveal>
+          {ui.hero.meta.map((item) => (
+            <span class="chip tabular">{item}</span>
+          ))}
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3" data-reveal>
+          <a href="#productos" class="btn btn-primary px-6 py-3 text-sm">
+            {ui.hero.ctaProducts}
+            <svg viewBox="0 0 16 16" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 8h10M9 4l4 4-4 4" />
+            </svg>
+          </a>
+          <a href="#contacto" class="btn btn-ghost px-6 py-3 text-sm">
+            {ui.hero.ctaContact}
+          </a>
+        </div>
       </div>
 
-      <div class="flex flex-wrap items-center gap-3" data-reveal>
-        {ui.hero.meta.map((item) => (
-          <span class="chip tabular">{item}</span>
-        ))}
-      </div>
-
-      <div class="flex flex-wrap items-center gap-3" data-reveal>
-        <a href="#proyectos" class="btn btn-primary px-6 py-3 text-sm">
-          {ui.hero.ctaProjects}
-          <svg viewBox="0 0 16 16" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M3 8h10M9 4l4 4-4 4" />
-          </svg>
-        </a>
-        <a href="#contacto" class="btn btn-ghost px-6 py-3 text-sm">
-          {ui.hero.ctaContact}
-        </a>
-      </div>
-    </div>
-
-    <div class="order-1 shrink-0 lg:order-2" data-reveal>
+      <div class="order-1 shrink-0 lg:order-2" data-reveal>
         <div
           class="rounded-full p-[3px]"
           style="background: linear-gradient(135deg, var(--color-cyan-glow), var(--color-violet-glow)); box-shadow: 0 0 44px -10px color-mix(in srgb, var(--color-cyan-glow) 40%, transparent);"
@@ -71,15 +87,4 @@ const { ui } = Astro.props;
       </div>
     </div>
   </div>
-
-  <a
-    href="#proyectos"
-    class="absolute bottom-6 left-1/2 hidden -translate-x-1/2 items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-slate-500 transition-colors hover:text-cyan-glow md:flex dark:text-slate-400"
-    aria-hidden="true"
-  >
-    <span>{ui.hero.ctaProjects}</span>
-    <svg viewBox="0 0 16 16" class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M8 3v10M4 9l4 4 4-4" />
-    </svg>
-  </a>
 </section>

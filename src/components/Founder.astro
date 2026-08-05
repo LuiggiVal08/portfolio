@@ -1,0 +1,47 @@
+---
+import { Image } from 'astro:assets';
+import avatar from '../assets/avatar.png';
+import type { UI } from '../i18n';
+
+interface Props {
+  ui: UI;
+}
+
+const { ui } = Astro.props;
+---
+
+<section id="founder" class="scroll-mt-28 py-24 sm:py-32">
+  <div class="container-x">
+    <div class="card glow-hover grid gap-10 p-8 sm:p-12 lg:grid-cols-[auto_1fr]" data-reveal>
+      <div
+        class="mx-auto h-fit rounded-full p-[3px] lg:mx-0"
+        style="background: linear-gradient(135deg, var(--color-cyan-glow), var(--color-violet-glow));"
+      >
+        <Image
+          src={avatar}
+          alt="Luis Angel Valencia Valera"
+          width={460}
+          height={460}
+          sizes="7.5rem"
+          class="h-28 w-28 rounded-full object-cover sm:h-32 sm:w-32"
+        />
+      </div>
+
+      <div>
+        <p class="eyebrow">{ui.founder.kicker}</p>
+        <h2 class="mt-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+          {ui.founder.title}
+        </h2>
+        <div class="mt-5 flex flex-col gap-4">
+          <p class="max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-300 sm:text-base">
+            {ui.founder.p1}
+          </p>
+          <p class="max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-300 sm:text-base">
+            {ui.founder.p2}
+          </p>
+        </div>
+        <p class="mt-6 font-mono text-sm text-cyan-glow">{ui.founder.stack}</p>
+      </div>
+    </div>
+  </div>
+</section>

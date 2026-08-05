@@ -1,56 +1,78 @@
 {
   "langLabel": "ES",
   "nav": {
-    "projects": "Proyectos",
-    "skills": "Habilidades",
+    "products": "Productos",
+    "odalx": "ODALX",
     "contact": "Contacto"
   },
   "hero": {
-    "eyebrow": "ODALX · Portafolio — 2026",
-    "signature": "por Luis Angel Valencia Valera",
-    "role": "Fullstack Developer",
-    "roles": ["Fullstack Developer", "JavaScript → TypeScript", "Node.js + React", "Backend & Frontend"],
-    "tagline": "Construyo herramientas para agentes de IA, bots de trading y ERPs empresariales — con JavaScript, TypeScript, Node.js y React, del backend al frontend.",
-    "meta": ["23 años", "Venezuela 🇻🇪", "JS → TS"],
-    "ctaProjects": "Ver proyectos",
+    "eyebrow": "Laboratorio de software",
+    "founder": "Fundador de ODALX",
+    "signature": "Luis Angel Valencia Valera",
+    "building": ["Construyendo Software", "Construyendo IA", "Construyendo SaaS"],
+    "valueProp": "Construyo software escalable para resolver problemas complejos.",
+    "tagline": "Del backend al frontend, con JavaScript → TypeScript, Node.js y React.",
+    "meta": ["23 años", "Venezuela 🇻🇪", "Estudiante & Autodidacta"],
+    "ctaProducts": "Ver productos",
     "ctaContact": "Hablemos"
   },
-  "projects": {
-    "kicker": "Trabajo destacado",
-    "title": "Proyectos",
-    "subtitle": "Tres proyectos, una marca, cero fronteras.",
-    "viewCode": "Código",
-    "viewDemo": "Demo",
+  "products": {
+    "kicker": "Productos",
+    "title": "En el laboratorio",
+    "subtitle": "Productos que nacen bajo la marca ODALX, con especificación, arquitectura y métricas reales.",
     "inDevelopment": "En desarrollo",
+    "published": "Publicado",
+    "metrics": "Métricas",
+    "architecture": "Arquitectura",
+    "features": "Características",
+    "roadmap": "Roadmap",
+    "viewCode": "Código",
+    "viewDocs": "Docs",
     "stars": "estrellas"
   },
-  "skills": {
-    "kicker": "Stack",
-    "title": "Habilidades",
-    "subtitle": "Mi especialidad es JavaScript, evolucionando a TypeScript — tanto en frontend como en backend.",
-    "groups": [
-      {
-        "label": "Frontend",
-        "items": ["React", "JavaScript (ES2023)", "TypeScript", "HTML & CSS", "Tailwind CSS"]
-      },
-      {
-        "label": "Backend",
-        "items": ["Node.js", "NestJS", "TypeScript", "REST APIs", "Microservicios"]
-      },
-      {
-        "label": "Datos & Infra",
-        "items": ["Redis", "Python", "WebSockets", "Docker", "Event-Driven"]
-      },
-      {
-        "label": "IA & Ecosistema",
-        "items": ["MCP", "Agentes de IA", "Keras / TensorFlow", "CLI Tools"]
-      }
-    ]
+  "mission": {
+    "kicker": "La historia",
+    "title": "Why ODALX",
+    "runeOdal": "Odal (ᛟ) — el legado: lo que se hereda y se transmite.",
+    "runeGebo": "Gebo (ᚷ) — el regalo: lo que se ofrece a cambio.",
+    "p1": "ODALX nace de la unión de dos runas: Odal y Gebo. El nombre dice lo que la marca hace: heredar el conocimiento — leer, estudiar, equivocarse, acumular — y regalarlo — código abierto, documentación, herramientas que otros usan.",
+    "p2": "Mientras estudio y me formo por mi cuenta, este es el laboratorio donde los productos nacen de la curiosidad: un bot que aprende de los mercados, una memoria que no olvida, un ERP que escala.",
+    "quote": "Construir conocimiento que se hereda, y compartirlo como regalo."
+  },
+  "capabilities": {
+    "kicker": "Capacidades",
+    "title": "Qué construyo",
+    "subtitle": "No compro tecnologías, construyo resultados.",
+    "items": [
+      { "title": "SaaS", "description": "Productos multi-tenant listos para crecer a nivel global." },
+      { "title": "IA", "description": "Modelos y agentes que deciden con datos reales." },
+      { "title": "Sistemas Distribuidos", "description": "Microservicios event-driven sobre Redis." },
+      { "title": "Arquitecturas Escalables", "description": "Hexagonal y clean architecture, desacopladas por dominio." },
+      { "title": "APIs", "description": "Backends robustos con Node.js, TypeScript y Python." }
+    ],
+    "note": "Las tecnologías concretas viven dentro de cada producto."
+  },
+  "opensource": {
+    "kicker": "Open Source",
+    "title": "El código es público",
+    "subtitle": "Dejé el código abierto: cualquiera puede ver la arquitectura, los tests y la documentación.",
+    "viewRepo": "Ver repositorio",
+    "npm": "Publicado en npm",
+    "registry": "MCP Registry",
+    "docs": "Docs en línea",
+    "stars": "estrellas"
+  },
+  "founder": {
+    "kicker": "Founder",
+    "title": "Detrás de ODALX",
+    "p1": "Luis Angel Valencia Valera — 23 años, Venezuela. Estudiante y autodidacta, construye por igual en el backend y en el frontend: JavaScript → TypeScript, Node.js y React.",
+    "p2": "La misma persona escribe la spec, la arquitectura, el código y los tests. Eso es ODALX: una empresa de una persona, sin fingir que hay más.",
+    "stack": "JS → TS · Node.js · React"
   },
   "contact": {
     "kicker": "Contacto",
     "title": "¿Trabajamos juntos?",
-    "subtitle": "Escríbele a Luis, fundador de OdalX. Respondo rápido.",
+    "subtitle": "Escríbele a Luis, fundador de ODALX. Respondo rápido.",
     "githubCta": "Seguir en GitHub",
     "handle": "LuiggiVal08"
   },
