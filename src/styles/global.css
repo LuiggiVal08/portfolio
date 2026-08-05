@@ -262,6 +262,7 @@
   left: 0;
   z-index: -1;
   pointer-events: none;
+  opacity: 0.85;
 }
 
 .tree svg {
@@ -274,39 +275,40 @@
 }
 
 .tree-trunk {
-  stroke: color-mix(in srgb, var(--color-cyan-glow) 42%, transparent);
-  stroke-width: 3;
+  stroke: rgb(148 163 184 / 0.5);
+  stroke-width: 1.5;
 }
 
 .tree-branch {
-  stroke-width: 2.5;
-  stroke-dasharray: 1;
+  stroke: color-mix(in srgb, var(--color-cyan-glow) 45%, transparent);
+  stroke-width: 1.5;
 }
 
-.tree-branch-cyan {
-  stroke: color-mix(in srgb, var(--color-cyan-glow) 64%, transparent);
-}
-
-.tree-branch-violet {
-  stroke: color-mix(in srgb, var(--color-violet-glow) 64%, transparent);
-}
-
-.tree-dot {
-  fill: var(--color-cyan-glow);
-  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--color-cyan-glow) 85%, transparent));
-}
-
-.tree-dot-violet {
-  fill: var(--color-violet-glow);
-  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--color-violet-glow) 85%, transparent));
-}
-
-.tree-dot-node {
+.tree-commit {
+  fill: #05060f;
+  stroke-width: 1.5;
   opacity: 0;
+  transition: opacity 0.45s ease;
 }
 
-.tree-travel {
+:root:not(.dark) .tree-commit {
   fill: #f8fafc;
-  filter: drop-shadow(0 0 10px var(--color-cyan-glow));
-  opacity: 0;
+}
+
+.tree-commit-trunk {
+  stroke: rgb(148 163 184 / 0.7);
+}
+
+.tree-commit-branch {
+  stroke: color-mix(in srgb, var(--color-cyan-glow) 55%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tree-commit {
+    opacity: 1 !important;
+    transition: none;
+  }
+  .tree-draw {
+    stroke-dashoffset: 0 !important;
+  }
 }
