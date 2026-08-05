@@ -40,6 +40,10 @@
       var docH = document.documentElement.scrollHeight;
       var sy = window.scrollY;
 
+      S.setAttribute('width', String(w));
+      S.setAttribute('height', String(docH));
+      S.setAttribute('viewBox', '0 0 ' + w + ' ' + docH);
+
       var sections = Array.prototype.slice.call(
         document.querySelectorAll('section[data-tree]')
       );
