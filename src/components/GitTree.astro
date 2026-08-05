@@ -1,4 +1,5 @@
 ---
+
 ---
 
 <div class="tree" aria-hidden="true">
@@ -13,6 +14,7 @@
     var NS = 'http://www.w3.org/2000/svg';
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var trunk = null;
+    var travel = null;
     var branches = [];
     var dots = [];
 
@@ -32,6 +34,7 @@
     function build() {
       while (S.firstChild) S.removeChild(S.firstChild);
       trunk = null;
+      travel = null;
       branches = [];
       dots = [];
 
@@ -41,7 +44,8 @@
       S.setAttribute('height', String(docH));
       S.setAttribute('viewBox', '0 0 ' + w + ' ' + docH);
 
-      var tx = Math.max(14, Math.round(w * 0.028));
+      var tx = Math.max(16, Math.round(w * 0.03));
+      var sy = window.scrollY;
 
       trunk = makeEl('path', {
         d: 'M ' + tx + ' 0 L ' + tx + ' ' + docH,
@@ -50,26 +54,43 @@
         'stroke-dasharray': '1',
       });
 
-      var root = makeEl('circle', { cx: tx, cy: 70, r: 3.2, class: 'tree-dot' });
-      dots.push({ el: root, y: 70 });
+      travel = makeEl('circle', { cx: tx, cy: 60, r: 4, class: 'tree-travel' });
+
+      var root = makeEl('circle', { cx: tx, cy: 56, r: 5, class: 'tree-dot tree-dot-root' });
+      dots.push({ el: root, y: 56 });
+
+      var stepY = docH > 2200 ? 300 : 200;
+      for (var gy = 240; gy < docH; gy += stepY) {
+        var nd = makeEl('circle', { cx: tx, cy: gy, r: 2.2, class: 'tree-dot tree-dot-node' });
+        dots.push({ el: nd, y: gy });
+      }
 
       var targets = Array.prototype.slice.call(
-        document.querySelectorAll('[data-tree]'),
+        document.querySelectorAll('section[data-tree]'),
         1
       );
 
       targets.forEach(function (sec, idx) {
-        var r = sec.getBoundingClientRect();
-        var y = r.top + window.scrollY + r.height / 2;
-        var tipX = Math.max(tx + 12, Math.round(r.left));
-        var yStart = Math.max(90, y - 260);
+        var secRect = sec.getBoundingClientRect();
+        var cy = secRect.top + sy + secRect.height / 2;
+        var eyebrow = sec.querySelector('.eyebrow');
+        var tipX = tx + 8;
+        var y = cy;
+        if (eyebrow) {
+          var er = eyebrow.getBoundingClientRect();
+          y = er.top + sy + er.height / 2;
+          tipX = Math.max(tx + 8, Math.round(er.left));
+        } else {
+          tipX = Math.max(tx + 8, Math.round(secRect.left));
+        }
+        var yStart = Math.max(120, y - 320);
         var tone = idx % 2 === 0 ? 'cyan' : 'violet';
 
         var path = makeEl('path', {
           d:
             'M ' + tx + ' ' + yStart +
-            ' C ' + (tx + 46) + ' ' + yStart +
-            ', ' + (tipX - 30) + ' ' + (y - 56) +
+            ' C ' + (tx + 96) + ' ' + yStart +
+            ', ' + (tipX - 70) + ' ' + (y + 8) +
             ', ' + tipX + ' ' + y,
           class: 'tree-branch tree-branch-' + tone,
           pathLength: '1',
@@ -79,12 +100,17 @@
         var tip = makeEl('circle', {
           cx: tipX,
           cy: y,
-          r: 3.4,
+          r: 4.5,
           class: 'tree-dot' + (tone === 'violet' ? ' tree-dot-violet' : ''),
         });
         branches.push({ el: path, y0: yStart, dot: tip });
 
-        var node = makeEl('circle', { cx: tx, cy: yStart, r: 2.6, class: 'tree-dot tree-dot-node' });
+        var node = makeEl('circle', {
+          cx: tx,
+          cy: yStart,
+          r: 2.4,
+          class: 'tree-dot tree-dot-node',
+        });
         dots.push({ el: node, y: yStart });
       });
     }
@@ -92,6 +118,7 @@
     function drawAll() {
       if (!trunk) return;
       trunk.setAttribute('stroke-dashoffset', '0');
+      if (travel) travel.setAttribute('opacity', '0.9');
       branches.forEach(function (b) {
         b.el.setAttribute('stroke-dashoffset', '0');
         b.dot.setAttribute('opacity', '1');
@@ -110,18 +137,23 @@
       var p = clamp(sy / total, 0, 1);
 
       trunk.setAttribute('stroke-dashoffset', String(1 - p));
+      if (travel) {
+        var ty = clamp((p * docH) - 56, 56, docH);
+        travel.setAttribute('cy', String(ty));
+        travel.setAttribute('opacity', String(p > 0 ? 0.55 + 0.35 * p : 0.9));
+      }
       branches.forEach(function (b) {
-        var pb = clamp((sy + vh * 0.85 - b.y0) / (vh * 0.5), 0, 1);
-        b.el.setAttribute('stroke-dashoffset', String(1 - pb));
-        b.dot.setAttribute('opacity', String(pb));
+        var pb = clamp((sy + vh * 0.9 - b.y0) / (vh * 0.8), 0, 1);
+        b.path.setAttribute('stroke-dashoffset', String(1 - pb));
+        b.dot.setAttribute('opacity', String(clamp(pb * 1.6, 0, 1)));
       });
       dots.forEach(function (d) {
-        d.el.setAttribute('opacity', String(clamp((sy + vh * 0.9 - d.y) / 80, 0, 1)));
+        var a = clamp((sy + vh * 0.9 - d.y) / 140, 0, 1);
+        d.el.setAttribute('opacity', String(a));
       });
     }
 
     build();
-
     if (reduce) {
       drawAll();
       return;

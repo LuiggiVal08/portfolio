@@ -274,33 +274,39 @@
 }
 
 .tree-trunk {
-  stroke: color-mix(in srgb, var(--color-cyan-glow) 26%, transparent);
-  stroke-width: 2;
+  stroke: color-mix(in srgb, var(--color-cyan-glow) 42%, transparent);
+  stroke-width: 3;
 }
 
 .tree-branch {
-  stroke-width: 1.75;
+  stroke-width: 2.5;
   stroke-dasharray: 1;
 }
 
 .tree-branch-cyan {
-  stroke: color-mix(in srgb, var(--color-cyan-glow) 45%, transparent);
+  stroke: color-mix(in srgb, var(--color-cyan-glow) 64%, transparent);
 }
 
 .tree-branch-violet {
-  stroke: color-mix(in srgb, var(--color-violet-glow) 45%, transparent);
+  stroke: color-mix(in srgb, var(--color-violet-glow) 64%, transparent);
 }
 
 .tree-dot {
   fill: var(--color-cyan-glow);
-  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-cyan-glow) 70%, transparent));
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--color-cyan-glow) 85%, transparent));
 }
 
 .tree-dot-violet {
   fill: var(--color-violet-glow);
-  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-violet-glow) 70%, transparent));
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--color-violet-glow) 85%, transparent));
 }
 
 .tree-dot-node {
+  opacity: 0;
+}
+
+.tree-travel {
+  fill: #f8fafc;
+  filter: drop-shadow(0 0 10px var(--color-cyan-glow));
   opacity: 0;
 }
