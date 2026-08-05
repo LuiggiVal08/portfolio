@@ -146,8 +146,22 @@
               var seg = fyB - fyT;
 
               if (seg > 160) {
-                var f1 = centerX + featSide * 70;
-                var f2 = centerX + featSide * 132;
+                var contRect = cont.getBoundingClientRect();
+                var voxL = contRect.left;
+                var voxR = contRect.left + contRect.width;
+                var cardL = r.left;
+                var cardR = r.left + r.width;
+                var voidW = featSide > 0 ? voxR - cardR : cardL - voxL;
+                var f1 = featSide > 0
+                  ? cardR + voidW * 0.16
+                  : cardL - voidW * 0.16;
+                var f2 = featSide > 0
+                  ? cardR + voidW * 0.34
+                  : cardL - voidW * 0.34;
+                if (voidW < 140) {
+                  f1 = centerX + featSide * 60;
+                  f2 = centerX + featSide * 110;
+                }
 
                 var mainP = makeEl('path', {
                   d:
