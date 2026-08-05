@@ -50,7 +50,7 @@
       if (sections.length < 2) return;
 
       var centerX = w / 2;
-      var pairs = [];
+      var sects = [];
       var minY = Infinity;
       var maxY = -Infinity;
 
@@ -65,6 +65,8 @@
 
         var g = makeEl('g', { class: 'tree-group' });
         var seq = [];
+        var firstY = Infinity;
+        var lastY = -Infinity;
 
         items.forEach(function (item) {
           var r = item.getBoundingClientRect();
@@ -91,13 +93,56 @@
           });
 
           seq.push({ p: p, dots: [trunkDot, edgeDot] });
-          if (r.top + sy < minY) minY = r.top + sy;
-          if (r.bottom + sy > maxY) maxY = r.bottom + sy;
+          if (cy < firstY) firstY = cy;
+          if (cy > lastY) lastY = cy;
         });
 
         S.appendChild(g);
-        pairs.push({ sec: sec, g: g, seq: seq });
+        sects.push({ sec: sec, g: g, seq: seq, firstY: firstY, lastY: lastY });
+        if (firstY < minY) minY = firstY;
+        if (lastY > maxY) maxY = lastY;
       });
+
+      for (var gi = 1; gi < sects.length; gi += 1) {
+        var prev = sects[gi - 1];
+        var next = sects[gi];
+        var leave = prev.lastY;
+        var merge = next.firstY;
+        if (merge - leave < 140) continue;
+
+        var gside = gi % 2 === 1 ? 1 : -1;
+        var laneX = centerX + gside * 22;
+
+        var gp = makeEl('path', {
+          d:
+            'M ' + centerX + ' ' + leave +
+            ' C ' + (centerX + gside * 16) + ' ' + leave +
+            ', ' + laneX + ' ' + (leave + 12) +
+            ', ' + laneX + ' ' + (leave + 22) +
+            ' L ' + laneX + ' ' + (merge - 22) +
+            ' C ' + laneX + ' ' + (merge - 12) +
+            ', ' + (centerX + gside * 16) + ' ' + merge +
+            ', ' + centerX + ' ' + merge,
+          class: 'tree-branch',
+        });
+        var gpl = gp.getTotalLength();
+        gp.style.strokeDasharray = String(gpl);
+        gp.style.strokeDashoffset = String(gpl);
+
+        var gdots = [];
+        var gn = gi % 2 === 0 ? 2 : 1;
+        for (var k = 0; k < gn; k += 1) {
+          var gy = leave + 44 + k * 52;
+          if (gy <= merge - 40) {
+            gdots.push(makeEl('circle', {
+              cx: laneX, cy: gy, r: 4.5,
+              class: 'tree-commit tree-commit-branch',
+            }));
+          }
+        }
+
+        next.seq.unshift({ p: gp, dots: gdots });
+      }
 
       if (!isFinite(minY)) return;
 
@@ -107,7 +152,7 @@
       });
 
       function drawAll() {
-        pairs.forEach(function (pair) {
+        sects.forEach(function (pair) {
           pair.seq.forEach(function (s) {
             s.p.style.strokeDashoffset = '0';
             s.dots.forEach(function (d) {
@@ -118,7 +163,7 @@
       }
 
       if (reduce || !('IntersectionObserver' in window)) {
-        pairs.forEach(function (p) {
+        sects.forEach(function (p) {
           p.g.classList.add('in-view');
         });
         drawAll();
@@ -130,7 +175,7 @@
           entries.forEach(function (en) {
             if (!en.isIntersecting) return;
             var hit = null;
-            pairs.forEach(function (p) {
+            sects.forEach(function (p) {
               if (p.sec === en.target) hit = p;
             });
             if (!hit) return;
@@ -163,7 +208,7 @@
         { threshold: 0.2 }
       );
 
-      pairs.forEach(function (p) {
+      sects.forEach(function (p) {
         obs.observe(p.sec);
       });
     }
