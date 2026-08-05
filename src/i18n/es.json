@@ -30,11 +30,6 @@
     "viewDocs": "Docs",
     "stars": "estrellas"
   },
-  "gitgraph": {
-    "kicker": "Git log",
-    "title": "El árbol de ODALX",
-    "subtitle": "Commits reales de los tres repositorios — el laboratorio, rama por rama."
-  },
   "mission": {
     "kicker": "La historia",
     "title": "¿Por qué ODALX?",

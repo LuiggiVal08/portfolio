@@ -1,7 +1,6 @@
 ---
 import { Image } from 'astro:assets';
 import avatar from '../assets/avatar.png';
-import Terminal from './Terminal.astro';
 import type { UI } from '../i18n';
 
 interface Props {
@@ -16,7 +15,7 @@ const buildingLines = ui.hero.building.map((line) => {
 });
 ---
 
-<section class="relative flex min-h-svh flex-col justify-center overflow-hidden">
+<section data-tree class="relative flex min-h-svh flex-col justify-center overflow-hidden">
   <div class="container-x pt-28 pb-16 sm:pt-32">
     <div class="flex flex-col items-center gap-12 lg:flex-row lg:items-center lg:justify-between">
       <div class="order-2 flex flex-col items-start gap-7 lg:order-1 lg:max-w-4xl">
@@ -33,7 +32,7 @@ const buildingLines = ui.hero.building.map((line) => {
           <span class="text-slate-500 dark:text-slate-400">— {ui.hero.signature}</span>
         </div>
 
-        <div class="flex flex-col gap-1.5">
+        <div id="hero-building" class="flex flex-col gap-1.5">
           {
             buildingLines.map((line, i) => (
               <p
@@ -41,7 +40,7 @@ const buildingLines = ui.hero.building.map((line) => {
                 data-reveal
                 style={`transition-delay: ${i * 90 + 60}ms`}
               >
-                <span class="text-accent">{line.verb}</span> {line.rest}
+                <span class="hero-verb text-accent">{line.verb}</span><span class="hero-rest"> {line.rest}</span>
               </p>
             ))
           }
@@ -71,7 +70,7 @@ const buildingLines = ui.hero.building.map((line) => {
         </div>
       </div>
 
-      <div class="order-1 flex flex-col items-center gap-8 lg:order-2" data-reveal>
+      <div class="order-1 shrink-0 lg:order-2" data-reveal>
         <div
           class="rounded-full p-[3px]"
           style="background: linear-gradient(135deg, var(--color-cyan-glow), var(--color-violet-glow)); box-shadow: 0 0 44px -10px color-mix(in srgb, var(--color-cyan-glow) 40%, transparent);"
@@ -81,14 +80,64 @@ const buildingLines = ui.hero.building.map((line) => {
             alt="Luis Angel Valencia Valera"
             width={460}
             height={460}
-            sizes="(min-width: 1024px) 10rem, 7rem"
-            class="h-28 w-28 rounded-full object-cover sm:h-32 sm:w-32 lg:h-40 lg:w-40"
+            sizes="(min-width: 1024px) 12rem, 8rem"
+            class="h-32 w-32 rounded-full object-cover sm:h-36 sm:w-36 lg:h-48 lg:w-48"
           />
-        </div>
-        <div class="w-full max-w-[22rem] sm:max-w-[24rem]">
-          <Terminal />
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<script>
+  (function () {
+    var container = document.getElementById('hero-building');
+    if (!container) return;
+    var lines = Array.prototype.slice.call(container.querySelectorAll('p'));
+    if (!lines.length) return;
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+
+    var cursor = null;
+
+    function addCursor(line) {
+      if (cursor) cursor.remove();
+      cursor = document.createElement('span');
+      cursor.className = 'cursor';
+      cursor.setAttribute('aria-hidden', 'true');
+      line.appendChild(cursor);
+    }
+
+    function typeLine(idx) {
+      if (idx >= lines.length) {
+        addCursor(lines[lines.length - 1]);
+        return;
+      }
+      var line = lines[idx];
+      var verb = line.querySelector('.hero-verb');
+      var rest = line.querySelector('.hero-rest');
+      var verbLen = verb ? verb.textContent.length : 0;
+      var text = (verb ? verb.textContent : '') + (rest ? rest.textContent : '');
+      if (verb) verb.textContent = '';
+      if (rest) rest.textContent = '';
+      addCursor(line);
+
+      var ci = 0;
+      (function step() {
+        if (ci <= text.length) {
+          var s = text.slice(0, ci);
+          if (verb) verb.textContent = s.slice(0, verbLen);
+          if (rest) rest.textContent = s.slice(verbLen);
+          ci += 1;
+          setTimeout(step, 26);
+        } else {
+          setTimeout(function () {
+            typeLine(idx + 1);
+          }, 240);
+        }
+      })();
+    }
+
+    typeLine(0);
+  })();
+</script>

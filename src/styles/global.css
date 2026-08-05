@@ -233,66 +233,7 @@
   }
 }
 
-/* ── Terminal ─────────────────────────────── */
-.term {
-  width: 100%;
-  border-radius: 0.75rem;
-  border: 1px solid color-mix(in srgb, var(--color-cyan-glow) 16%, transparent);
-  background: linear-gradient(180deg, rgb(10 12 24 / 0.92), rgb(5 6 12 / 0.96));
-  box-shadow:
-    0 24px 60px -24px rgb(2 6 23 / 0.85),
-    0 0 42px -14px color-mix(in srgb, var(--color-cyan-glow) 22%, transparent);
-  overflow: hidden;
-}
-
-.term-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.55rem 0.9rem;
-  border-bottom: 1px solid color-mix(in srgb, var(--color-cyan-glow) 12%, transparent);
-  background: rgb(2 6 23 / 0.6);
-}
-
-.term-dot {
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 9999px;
-}
-
-.term-dot-r { background: #f87171; }
-.term-dot-y { background: #fbbf24; }
-.term-dot-g { background: #34d399; }
-
-.term-title {
-  margin-left: 0.35rem;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: rgb(148 163 184 / 0.9);
-}
-
-.term-body {
-  padding: 1.1rem 1.2rem 1.2rem;
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  line-height: 1.85;
-  color: #cbd5e1;
-}
-
-.term-prompt { color: var(--color-cyan-glow); }
-.term-cmd { color: #e2e8f0; }
-
-.term-out {
-  color: #94a3b8;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
-.term-dir,
-.term-br { color: var(--color-cyan-glow); }
-
-.term-dim { color: #64748b; }
-
+/* ── Terminal cursor ───────────────────────── */
 .cursor {
   display: inline-block;
   width: 0.55em;
@@ -314,73 +255,52 @@
   }
 }
 
-/* ── Git graph ────────────────────────────── */
-.gitlog {
-  padding-bottom: 0.2rem;
+/* ── Git tree (full page) ──────────────────── */
+.tree {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  pointer-events: none;
 }
 
-.gitlog-prompt {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  color: #e2e8f0;
-  padding-bottom: 0.9rem;
-  border-bottom: 1px dashed color-mix(in srgb, var(--color-cyan-glow) 14%, transparent);
-  margin-bottom: 0.6rem;
+.tree svg {
+  display: block;
 }
 
-.gitlog-row {
-  display: grid;
-  grid-template-columns: max-content 0.45rem max-content 1fr;
-  gap: 0 0.6rem;
-  align-items: baseline;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  line-height: 1.95;
+.tree path {
+  fill: none;
+  stroke-linecap: round;
 }
 
-.gitlog-gutter {
-  color: #475569;
-  white-space: pre;
+.tree-trunk {
+  stroke: color-mix(in srgb, var(--color-cyan-glow) 26%, transparent);
+  stroke-width: 2;
 }
 
-.gitlog-dot {
-  width: 0.4rem;
-  height: 0.4rem;
-  border-radius: 9999px;
-  align-self: center;
-  background: var(--color-cyan-glow);
-  box-shadow: 0 0 10px 1px color-mix(in srgb, var(--color-cyan-glow) 60%, transparent);
+.tree-branch {
+  stroke-width: 1.75;
+  stroke-dasharray: 1;
 }
 
-.gitlog-dot-violet {
-  background: var(--color-violet-glow);
-  box-shadow: 0 0 10px 1px color-mix(in srgb, var(--color-violet-glow) 60%, transparent);
+.tree-branch-cyan {
+  stroke: color-mix(in srgb, var(--color-cyan-glow) 45%, transparent);
 }
 
-.gitlog-hash { color: #64748b; }
-
-.gitlog-msg {
-  color: #cbd5e1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding-right: 1rem;
-  transition: color 0.2s ease;
+.tree-branch-violet {
+  stroke: color-mix(in srgb, var(--color-violet-glow) 45%, transparent);
 }
 
-.gitlog-row:hover .gitlog-msg { color: #f8fafc; }
-
-.gitlog-tag {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  color: var(--color-cyan-glow);
-  border: 1px solid color-mix(in srgb, var(--color-cyan-glow) 30%, transparent);
-  border-radius: 9999px;
-  padding: 0.05rem 0.5rem;
-  white-space: nowrap;
+.tree-dot {
+  fill: var(--color-cyan-glow);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-cyan-glow) 70%, transparent));
 }
 
-.gitlog-tag-violet {
-  color: var(--color-violet-glow);
-  border-color: color-mix(in srgb, var(--color-violet-glow) 30%, transparent);
+.tree-dot-violet {
+  fill: var(--color-violet-glow);
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-violet-glow) 70%, transparent));
+}
+
+.tree-dot-node {
+  opacity: 0;
 }

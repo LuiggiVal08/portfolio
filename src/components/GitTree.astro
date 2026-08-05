@@ -1,0 +1,156 @@
+---
+---
+
+<div class="tree" aria-hidden="true">
+  <svg id="tree-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+</div>
+
+<script is:inline>
+  (function () {
+    var svg = document.getElementById('tree-svg');
+    if (!svg) return;
+    var S = svg;
+    var NS = 'http://www.w3.org/2000/svg';
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var trunk = null;
+    var branches = [];
+    var dots = [];
+
+    function clamp(v, lo, hi) {
+      return Math.max(lo, Math.min(hi, v));
+    }
+
+    function makeEl(name, attrs) {
+      var el = document.createElementNS(NS, name);
+      Object.keys(attrs).forEach(function (k) {
+        el.setAttribute(k, attrs[k]);
+      });
+      S.appendChild(el);
+      return el;
+    }
+
+    function build() {
+      while (S.firstChild) S.removeChild(S.firstChild);
+      trunk = null;
+      branches = [];
+      dots = [];
+
+      var w = Math.max(320, document.documentElement.clientWidth);
+      var docH = document.documentElement.scrollHeight;
+      S.setAttribute('width', String(w));
+      S.setAttribute('height', String(docH));
+      S.setAttribute('viewBox', '0 0 ' + w + ' ' + docH);
+
+      var tx = Math.max(14, Math.round(w * 0.028));
+
+      trunk = makeEl('path', {
+        d: 'M ' + tx + ' 0 L ' + tx + ' ' + docH,
+        class: 'tree-trunk',
+        pathLength: '1',
+        'stroke-dasharray': '1',
+      });
+
+      var root = makeEl('circle', { cx: tx, cy: 70, r: 3.2, class: 'tree-dot' });
+      dots.push({ el: root, y: 70 });
+
+      var targets = Array.prototype.slice.call(
+        document.querySelectorAll('[data-tree]'),
+        1
+      );
+
+      targets.forEach(function (sec, idx) {
+        var r = sec.getBoundingClientRect();
+        var y = r.top + window.scrollY + r.height / 2;
+        var tipX = Math.max(tx + 12, Math.round(r.left));
+        var yStart = Math.max(90, y - 260);
+        var tone = idx % 2 === 0 ? 'cyan' : 'violet';
+
+        var path = makeEl('path', {
+          d:
+            'M ' + tx + ' ' + yStart +
+            ' C ' + (tx + 46) + ' ' + yStart +
+            ', ' + (tipX - 30) + ' ' + (y - 56) +
+            ', ' + tipX + ' ' + y,
+          class: 'tree-branch tree-branch-' + tone,
+          pathLength: '1',
+          'stroke-dasharray': '1',
+        });
+
+        var tip = makeEl('circle', {
+          cx: tipX,
+          cy: y,
+          r: 3.4,
+          class: 'tree-dot' + (tone === 'violet' ? ' tree-dot-violet' : ''),
+        });
+        branches.push({ el: path, y0: yStart, dot: tip });
+
+        var node = makeEl('circle', { cx: tx, cy: yStart, r: 2.6, class: 'tree-dot tree-dot-node' });
+        dots.push({ el: node, y: yStart });
+      });
+    }
+
+    function drawAll() {
+      if (!trunk) return;
+      trunk.setAttribute('stroke-dashoffset', '0');
+      branches.forEach(function (b) {
+        b.el.setAttribute('stroke-dashoffset', '0');
+        b.dot.setAttribute('opacity', '1');
+      });
+      dots.forEach(function (d) {
+        d.el.setAttribute('opacity', '1');
+      });
+    }
+
+    function onScroll() {
+      if (!trunk) return;
+      var sy = window.scrollY;
+      var vh = window.innerHeight;
+      var docH = document.documentElement.scrollHeight;
+      var total = Math.max(1, docH - vh);
+      var p = clamp(sy / total, 0, 1);
+
+      trunk.setAttribute('stroke-dashoffset', String(1 - p));
+      branches.forEach(function (b) {
+        var pb = clamp((sy + vh * 0.85 - b.y0) / (vh * 0.5), 0, 1);
+        b.el.setAttribute('stroke-dashoffset', String(1 - pb));
+        b.dot.setAttribute('opacity', String(pb));
+      });
+      dots.forEach(function (d) {
+        d.el.setAttribute('opacity', String(clamp((sy + vh * 0.9 - d.y) / 80, 0, 1)));
+      });
+    }
+
+    build();
+
+    if (reduce) {
+      drawAll();
+      return;
+    }
+
+    onScroll();
+
+    var ticking = false;
+    function req() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        ticking = false;
+        onScroll();
+      });
+    }
+
+    window.addEventListener('scroll', req, { passive: true });
+    window.addEventListener('resize', function () {
+      build();
+      req();
+    });
+    window.addEventListener('load', function () {
+      build();
+      req();
+    });
+    setTimeout(function () {
+      build();
+      req();
+    }, 800);
+  })();
+</script>
