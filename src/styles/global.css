@@ -292,8 +292,8 @@
 }
 
 .tree-branch {
-  stroke: color-mix(in srgb, var(--color-cyan-glow) 45%, transparent);
-  stroke-width: 1.5;
+  stroke: color-mix(in srgb, var(--color-cyan-glow) 55%, transparent);
+  stroke-width: 2;
 }
 
 .tree-branch-feature {

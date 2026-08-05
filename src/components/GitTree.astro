@@ -102,7 +102,8 @@
 
           if (h > 110) {
             var side = r.left + r.width / 2 < centerX ? -1 : 1;
-            lane = centerX + side * 22;
+            var edge = side < 0 ? r.left + r.width : r.left;
+            lane = edge - side * 18;
 
             path = makeEl('path', {
               d:
