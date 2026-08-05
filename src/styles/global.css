@@ -66,6 +66,18 @@
     @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
   }
 
+  @media (min-width: 80rem) {
+    .zigzag > * {
+      width: calc(50% - 56px);
+    }
+    .zigzag > *:nth-child(odd) {
+      margin-right: auto;
+    }
+    .zigzag > *:nth-child(even) {
+      margin-left: auto;
+    }
+  }
+
   .eyebrow {
     @apply font-mono text-xs font-medium uppercase tracking-[0.22em] text-cyan-glow;
   }

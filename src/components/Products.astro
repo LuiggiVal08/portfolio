@@ -18,8 +18,8 @@ const projects = allProjects
 ---
 
 <section id="productos" data-tree class="scroll-mt-28 py-24 sm:py-32">
-  <div class="container-x">
-    <div class="mb-14 max-w-2xl" data-reveal>
+  <div class="container-x zigzag">
+    <div class="mb-14 max-w-2xl" data-reveal data-tree-anchor>
       <p class="eyebrow">{ui.products.kicker}</p>
       <h2 class="mt-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">
         {ui.products.title}
@@ -27,10 +27,9 @@ const projects = allProjects
       <p class="mt-3 max-w-xl text-slate-600 dark:text-slate-300">{ui.products.subtitle}</p>
     </div>
 
-    <div class="flex flex-col gap-20">
-      {
-        projects.map((project, i) => (
-          <article id={project.slug} class="grid gap-10 lg:grid-cols-2 lg:gap-14" data-reveal data-tree-anchor>
+    {
+      projects.map((project, i) => (
+          <article id={project.slug} class="mt-20 grid gap-10 first:mt-0 lg:grid-cols-2 lg:gap-14 xl:grid-cols-1" data-reveal data-tree-anchor>
             <div class="flex flex-col">
               <div class="mb-3 flex items-center justify-between gap-3">
                 <span class="font-mono text-xs uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
@@ -57,7 +56,7 @@ const projects = allProjects
               </p>
 
               {project.metrics.length > 0 && (
-                <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4" data-tree-anchor>
+                <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-2">
                   {project.metrics.map((m) => (
                     <div class="card px-3 py-3.5">
                       <p class="tabular font-display text-xl font-bold text-slate-900 dark:text-white">
@@ -144,6 +143,5 @@ const projects = allProjects
           </article>
         ))
       }
-    </div>
   </div>
 </section>

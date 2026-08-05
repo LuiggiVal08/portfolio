@@ -12,7 +12,6 @@
     if (!svg) return;
     var S = svg;
     var NS = 'http://www.w3.org/2000/svg';
-    var A0 = 30;
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     function makeEl(name, attrs) {
@@ -28,194 +27,88 @@
       return 1 - Math.pow(1 - t, 3);
     }
 
-    function animateDraw(path, duration, delayMs, commitDots) {
-      setTimeout(function () {
-        var from = parseFloat(path.style.strokeDashoffset);
-        var start = null;
-        function tick(now) {
-          if (start === null) start = now;
-          var t = Math.min(1, (now - start) / duration);
-          path.style.strokeDashoffset = String(from * (1 - easeOutCubic(t)));
-          if (t < 1) {
-            requestAnimationFrame(tick);
-          } else {
-            commitDots.forEach(function (dot, i) {
-              setTimeout(function () {
-                dot.style.opacity = '1';
-              }, 150 + i * 160);
-            });
-          }
-        }
-        requestAnimationFrame(tick);
-      }, delayMs);
-    }
-
-    function cluster(ys, tol) {
-      ys.sort(function (a, b) { return a - b; });
-      var out = [];
-      var cur = [ys[0]];
-      for (var i = 1; i < ys.length; i += 1) {
-        if (ys[i] - cur[cur.length - 1] < tol) {
-          cur.push(ys[i]);
-        } else {
-          out.push(cur.reduce(function (s, v) { return s + v; }, 0) / cur.length);
-          cur = [ys[i]];
-        }
-      }
-      out.push(cur.reduce(function (s, v) { return s + v; }, 0) / cur.length);
-      return out;
-    }
-
     function build() {
       while (S.firstChild) S.removeChild(S.firstChild);
 
       var w = Math.max(320, document.documentElement.clientWidth);
+      if (w < 1280) {
+        S.style.display = 'none';
+        return;
+      }
+      S.style.display = '';
+
       var docH = document.documentElement.scrollHeight;
       var sy = window.scrollY;
 
       var sections = Array.prototype.slice.call(
         document.querySelectorAll('section[data-tree]')
       );
-      if (!sections.length) return;
+      if (sections.length < 2) return;
 
-      var cont = sections[0].querySelector('.container-x');
-      var contLeft = cont ? cont.getBoundingClientRect().left : Math.round(w * 0.08);
+      var centerX = w / 2;
+      var pairs = [];
+      var minY = Infinity;
+      var maxY = -Infinity;
 
-      var apexX = Math.round(contLeft - 8);
-      var lane = Math.min(72, apexX - 24);
-      var trunkX = apexX - lane;
+      sections.forEach(function (sec, si) {
+        if (si === 0) return;
+        var cont = sec.querySelector('.container-x');
+        if (!cont) return;
+        var items = Array.prototype.filter.call(cont.children, function (el) {
+          return el.hasAttribute('data-tree-anchor');
+        });
+        if (!items.length) return;
 
-      if (trunkX < 16) {
-        S.style.display = 'none';
-        return;
-      }
-      S.style.display = '';
+        var g = makeEl('g', { class: 'tree-group' });
+        var seq = [];
 
-      S.setAttribute('width', String(w));
-      S.setAttribute('height', String(docH));
-      S.setAttribute('viewBox', '0 0 ' + w + ' ' + docH);
+        items.forEach(function (item) {
+          var r = item.getBoundingClientRect();
+          var cy = r.top + sy + r.height / 2;
+          var side = r.left + r.width / 2 < centerX ? -1 : 1;
+          var edgeX = side < 0 ? r.right + 14 : r.left - 14;
+          var ctrl = centerX + side * Math.min(30, Math.abs(edgeX - centerX) * 0.45);
+
+          var p = makeEl('path', {
+            d: 'M ' + centerX + ' ' + cy + ' Q ' + ctrl + ' ' + cy + ' ' + edgeX + ' ' + cy,
+            class: 'tree-branch',
+          });
+          var pl = p.getTotalLength();
+          p.style.strokeDasharray = String(pl);
+          p.style.strokeDashoffset = String(pl);
+
+          var trunkDot = makeEl('circle', {
+            cx: centerX, cy: cy, r: 5,
+            class: 'tree-commit tree-commit-trunk',
+          });
+          var edgeDot = makeEl('circle', {
+            cx: edgeX, cy: cy, r: 4,
+            class: 'tree-commit tree-commit-branch',
+          });
+
+          seq.push({ p: p, dots: [trunkDot, edgeDot] });
+          if (r.top + sy < minY) minY = r.top + sy;
+          if (r.bottom + sy > maxY) maxY = r.bottom + sy;
+        });
+
+        S.appendChild(g);
+        pairs.push({ sec: sec, g: g, seq: seq });
+      });
+
+      if (!isFinite(minY)) return;
 
       makeEl('path', {
-        d: 'M ' + trunkX + ' 0 L ' + trunkX + ' ' + docH,
+        d: 'M ' + centerX + ' ' + (minY - 40) + ' L ' + centerX + ' ' + (maxY + 60),
         class: 'tree-trunk',
       });
 
-      function anchorsOf(sec) {
-        var els = Array.prototype.slice.call(sec.querySelectorAll('[data-tree-anchor]'));
-        var ys = els.map(function (el) {
-          var r = el.getBoundingClientRect();
-          return r.top + sy + r.height / 2;
-        });
-        return ys.length ? cluster(ys, 80) : null;
-      }
-
-      var anchorSets = sections.map(anchorsOf);
-
-      function trunkNode(cy, big) {
-        return makeEl('circle', {
-          cx: trunkX, cy: Math.round(cy), r: big ? 5 : 4.5,
-          class: 'tree-commit tree-commit-trunk',
-        });
-      }
-
-      function branchNode(cy) {
-        return makeEl('circle', {
-          cx: apexX, cy: Math.round(cy), r: 4.5,
-          class: 'tree-commit tree-commit-branch',
-        });
-      }
-
-      var pairs = [];
-      var prevMerge = 0;
-
-      var heroG = makeEl('g', { class: 'tree-group' });
-      var heroDots = [];
-      if (anchorSets[0]) {
-        heroDots = anchorSets[0].map(function (cy) {
-          return trunkNode(cy, true);
-        });
-      }
-      S.appendChild(heroG);
-      pairs.push({ sec: sections[0], g: heroG, path: null, dots: heroDots });
-
-      sections.slice(1).forEach(function (sec, idx) {
-        var i = idx + 1;
-        var A = anchorSets[i];
-        var g = makeEl('g', { class: 'tree-group' });
-        var path = null;
-        var dots = [];
-
-        if (A && A.length) {
-          var y0 = A[0];
-          var y2 = A[A.length - 1];
-          var nextA = anchorSets[i + 1];
-          if (nextA && nextA.length) y2 = Math.min(y2, nextA[0] - 40);
-          if (prevMerge) y0 = Math.max(y0, prevMerge + 40);
-
-          var uStart = y0 + A0 + 26;
-          var uEnd = y2 - A0 - 26;
-
-          var commits = A.slice(1, -1).filter(function (cy) {
-            return cy >= uStart && cy <= uEnd;
-          });
-          if (commits.length > 4) {
-            var stride = Math.ceil(commits.length / 4);
-            commits = commits.filter(function (_, k) { return k % stride === 0; });
-          }
-
-          if (commits.length && y2 - y0 >= A0 * 2 + 120) {
-            path = makeEl('path', {
-              d:
-                'M ' + trunkX + ' ' + y0 +
-                ' C ' + (trunkX + lane * 0.5) + ' ' + y0 +
-                ', ' + apexX + ' ' + (y0 + A0 * 0.5) +
-                ', ' + apexX + ' ' + (y0 + A0) +
-                ' L ' + apexX + ' ' + (y2 - A0) +
-                ' C ' + apexX + ' ' + (y2 - A0 * 0.5) +
-                ', ' + (trunkX + lane * 0.5) + ' ' + y2 +
-                ', ' + trunkX + ' ' + y2,
-              class: 'tree-branch tree-draw',
-            });
-            var pl = path.getTotalLength();
-            path.style.strokeDasharray = String(pl);
-            path.style.strokeDashoffset = String(pl);
-            dots.push(trunkNode(y0, true));
-            dots = dots.concat(commits.map(branchNode));
-            dots.push(trunkNode(y2, true));
-          } else if (y2 - y0 >= 90) {
-            dots.push(trunkNode(y0, true));
-            dots.push(trunkNode(y2, false));
-          } else {
-            dots.push(trunkNode(y0, true));
-          }
-          prevMerge = y2;
-        } else {
-          var top = sec.getBoundingClientRect().top + sy;
-          dots.push(trunkNode(top + 110, true));
-        }
-
-        S.appendChild(g);
-        pairs.push({ sec: sec, g: g, path: path, dots: dots });
-      });
-
-      var prevMerge = 0;
-
-      var foot = document.querySelector('footer [data-tree-anchor]');
-      var tailG = makeEl('g', { class: 'tree-group' });
-      var tailY = foot
-        ? foot.getBoundingClientRect().top + sy + foot.getBoundingClientRect().height / 2
-        : docH - 90;
-      var tailDot = trunkNode(tailY, true);
-      S.appendChild(tailG);
-      pairs.push({ sec: sections[sections.length - 1], g: tailG, path: null, dots: [tailDot] });
-
       function drawAll() {
-        pairs.forEach(function (p) {
-          if (p.path) {
-            p.path.style.strokeDashoffset = '0';
-          }
-          p.dots.forEach(function (d) {
-            d.style.opacity = '1';
+        pairs.forEach(function (pair) {
+          pair.seq.forEach(function (s) {
+            s.p.style.strokeDashoffset = '0';
+            s.dots.forEach(function (d) {
+              d.style.opacity = '1';
+            });
           });
         });
       }
@@ -239,20 +132,33 @@
             if (!hit) return;
             hit.g.classList.add('in-view');
             obs.unobserve(en.target);
-            if (hit.path) {
-              var delay = pairs.indexOf(hit) % 2 === 1 ? 220 : 0;
-              animateDraw(hit.path, 1150, delay, hit.dots);
-            } else {
-              hit.dots.forEach(function (d, i) {
-                setTimeout(function () {
-                  d.style.opacity = '1';
-                }, 150 + i * 180);
-              });
-            }
+
+            hit.seq.forEach(function (s, i) {
+              setTimeout(function () {
+                var from = parseFloat(s.p.style.strokeDashoffset);
+                var start = null;
+                function tick(now) {
+                  if (start === null) start = now;
+                  var t = Math.min(1, (now - start) / 700);
+                  s.p.style.strokeDashoffset = String(from * (1 - easeOutCubic(t)));
+                  if (t < 1) {
+                    requestAnimationFrame(tick);
+                  } else {
+                    s.dots.forEach(function (d, j) {
+                      setTimeout(function () {
+                        d.style.opacity = '1';
+                      }, 120 + j * 110);
+                    });
+                  }
+                }
+                requestAnimationFrame(tick);
+              }, i * 160);
+            });
           });
         },
         { threshold: 0.2 }
       );
+
       pairs.forEach(function (p) {
         obs.observe(p.sec);
       });
