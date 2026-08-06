@@ -153,26 +153,32 @@
                 var cardL = r.left;
                 var cardR = r.left + r.width;
                 var voidW = featSide > 0 ? voxR - cardR : cardL - voxL;
-                var f1 = featSide > 0
-                  ? cardR + 30
-                  : cardL - 30;
-                var f2 = featSide > 0
-                  ? cardR + 30 + Math.min(78, voidW * 0.28)
-                  : cardL - 30 - Math.min(78, voidW * 0.28);
+
                 if (voidW < 140) {
                   f1 = centerX + featSide * 60;
                   f2 = centerX + featSide * 110;
+                } else {
+                  f1 = featSide > 0
+                    ? cardR + voidW * 0.16
+                    : cardL - voidW * 0.16;
+                  f2 = featSide > 0
+                    ? cardR + voidW * 0.34
+                    : cardL - voidW * 0.34;
                 }
+
+                // La rama y el tronco deben quedar AMBOS del mismo lado de la tarjeta.
+                // Forzar f1/f2 al lado del producto del tronco (no cruzar el tronco).
+                var fDir = f1 > centerX ? 1 : -1;
 
                 var mainP = makeEl('path', {
                   d:
                     'M ' + centerX + ' ' + fyT +
-                    ' C ' + (centerX + featSide * 26) + ' ' + fyT +
+                    ' C ' + (centerX + fDir * 26) + ' ' + fyT +
                     ', ' + f1 + ' ' + (fyT + 12) +
                     ', ' + f1 + ' ' + (fyT + 24) +
                     ' L ' + f1 + ' ' + (fyB - 24) +
                     ' C ' + f1 + ' ' + (fyB - 12) +
-                    ', ' + (centerX + featSide * 26) + ' ' + fyB +
+                    ', ' + (centerX + fDir * 26) + ' ' + fyB +
                     ', ' + centerX + ' ' + fyB,
                   class: 'tree-branch tree-branch-feature',
                 });
