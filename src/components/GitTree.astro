@@ -105,15 +105,19 @@
             var edge = side < 0 ? r.left + r.width : r.left;
             lane = edge - side * 18;
 
+            var cRun = Math.abs(lane - centerX);
+            var cTurn = Math.max(22, Math.min(58, cRun * 1.2));
+            var cA = cTurn * 0.5;
+
             path = makeEl('path', {
               d:
                 'M ' + centerX + ' ' + absTop +
-                ' C ' + (centerX + side * 20) + ' ' + absTop +
-                ', ' + lane + ' ' + (absTop + 10) +
-                ', ' + lane + ' ' + (absTop + 22) +
-                ' L ' + lane + ' ' + (absBottom - 22) +
-                ' C ' + lane + ' ' + (absBottom - 10) +
-                ', ' + (centerX + side * 20) + ' ' + absBottom +
+                ' C ' + centerX + ' ' + (absTop + cA) +
+                ', ' + lane + ' ' + (absTop + cTurn - cA) +
+                ', ' + lane + ' ' + (absTop + cTurn) +
+                ' L ' + lane + ' ' + (absBottom - cTurn) +
+                ' C ' + lane + ' ' + (absBottom - cTurn + cA) +
+                ', ' + centerX + ' ' + (absBottom - cA) +
                 ', ' + centerX + ' ' + absBottom,
               class: 'tree-branch',
             });
@@ -129,7 +133,7 @@
             });
             if (subs.length) {
               subs = cluster(subs, 90).filter(function (y) {
-                return y >= absTop + 24 && y <= absBottom - 24;
+                return y >= absTop + cTurn + 10 && y <= absBottom - cTurn - 10;
               });
             }
             if (!subs.length) subs = [cy];
@@ -162,23 +166,26 @@
                     ? cardR + voidW * 0.16
                     : cardL - voidW * 0.16;
                   f2 = featSide > 0
-                    ? cardR + voidW * 0.34
-                    : cardL - voidW * 0.34;
+                    ? cardR + voidW * 0.24
+                    : cardL - voidW * 0.24;
                 }
 
                 // La rama y el tronco deben quedar AMBOS del mismo lado de la tarjeta.
                 // Forzar f1/f2 al lado del producto del tronco (no cruzar el tronco).
                 var fDir = f1 > centerX ? 1 : -1;
+                var runX = Math.abs(f1 - centerX);
+                var turnY = Math.max(58, Math.min(150, runX * 1.4));
+                var arcA = turnY * 0.5;
 
                 var mainP = makeEl('path', {
                   d:
                     'M ' + centerX + ' ' + fyT +
-                    ' C ' + (centerX + fDir * 26) + ' ' + fyT +
-                    ', ' + f1 + ' ' + (fyT + 12) +
-                    ', ' + f1 + ' ' + (fyT + 24) +
-                    ' L ' + f1 + ' ' + (fyB - 24) +
-                    ' C ' + f1 + ' ' + (fyB - 12) +
-                    ', ' + (centerX + fDir * 26) + ' ' + fyB +
+                    ' C ' + centerX + ' ' + (fyT + arcA) +
+                    ', ' + f1 + ' ' + (fyT + turnY - arcA) +
+                    ', ' + f1 + ' ' + (fyT + turnY) +
+                    ' L ' + f1 + ' ' + (fyB - turnY) +
+                    ' C ' + f1 + ' ' + (fyB - turnY + arcA) +
+                    ', ' + centerX + ' ' + (fyB - arcA) +
                     ', ' + centerX + ' ' + fyB,
                   class: 'tree-branch tree-branch-feature',
                 });
@@ -186,38 +193,56 @@
                 mainP.style.strokeDasharray = String(mpl);
                 mainP.style.strokeDashoffset = String(mpl);
 
-var fDots = [];
-                var mainYs = [];
-                for (var mk = 1; mk <= 6; mk += 1) {
-                  mainYs.push(fyT + (seg * mk) / 7);
+                var fDotTop = fyT + turnY + 12;
+                var fDotBot = fyB - turnY - 12;
+                var fDotSeg = fDotBot - fDotTop;
+                var fDots = [];
+                if (fDotSeg > 40) {
+                  var mainYs = [];
+                  for (var mk = 1; mk <= 6; mk += 1) {
+                    mainYs.push(fDotTop + (fDotSeg * mk) / 7);
+                  }
+                  mainYs.forEach(function (y) {
+                    fDots.push(makeEl('circle', {
+                      cx: f1, cy: y, r: 4.5,
+                      class: 'tree-commit tree-commit-branch tree-commit-feature',
+                    }));
+                  });
                 }
-                mainYs.forEach(function (y) {
-                  fDots.push(makeEl('circle', {
-                    cx: f1, cy: y, r: 4.5,
-                    class: 'tree-commit tree-commit-branch tree-commit-feature',
-                  }));
-                });
 
                 seq.push({ p: mainP, dots: fDots });
 
-                var subYs = [fyT + seg * 0.14, fyT + seg * 0.3, fyT + seg * 0.46, fyT + seg * 0.62, fyT + seg * 0.78, fyT + seg * 0.9];
+                fDots.push(makeEl('circle', {
+                  cx: centerX, cy: fyT, r: 3,
+                  class: 'tree-commit tree-commit-trunk',
+                }));
+                fDots.push(makeEl('circle', {
+                  cx: centerX, cy: fyB, r: 3,
+                  class: 'tree-commit tree-commit-trunk',
+                }));
+
+                var subYs = [fyT + seg * 0.34, fyT + seg * 0.66];
                 subYs.forEach(function (fyy) {
+                  var subRun = Math.abs(f2 - f1);
+                  var subTurn = Math.max(40, Math.min(84, subRun * 1.2));
+                  var subA = subTurn * 0.5;
+                  var subH = 200;
                   var subP = makeEl('path', {
                     d:
                       'M ' + f1 + ' ' + fyy +
-                      ' C ' + (f1 + featSide * 18) + ' ' + fyy +
-                      ', ' + f2 + ' ' + (fyy + 14) +
-                      ', ' + f2 + ' ' + (fyy + 24) +
-                      ' L ' + f2 + ' ' + (fyy + 96) +
-                      ' C ' + f2 + ' ' + (fyy + 106) +
-                      ', ' + (f1 + featSide * 18) + ' ' + (fyy + 120) +
-                      ', ' + f1 + ' ' + (fyy + 120),
+                      ' C ' + f1 + ' ' + (fyy + subA) +
+                      ', ' + f2 + ' ' + (fyy + subTurn - subA) +
+                      ', ' + f2 + ' ' + (fyy + subTurn) +
+                      ' L ' + f2 + ' ' + (fyy + subH - subTurn) +
+                      ' C ' + f2 + ' ' + (fyy + subH - subTurn + subA) +
+                      ', ' + f1 + ' ' + (fyy + subH - subA) +
+                      ', ' + f1 + ' ' + (fyy + subH),
                     class: 'tree-branch tree-branch-feature tree-branch-feature-sub',
                   });
                   var spl = subP.getTotalLength();
                   subP.style.strokeDashoffset = String(spl);
                   fDots.push(makeEl('circle', {
-                    cx: f2, cy: fyy + 60, r: 4,
+                    cx: f2, cy: fyy + subH / 2, r: 4,
                     class: 'tree-commit tree-commit-branch tree-commit-feature',
                   }));
                   seq.push({ p: subP, dots: [] });
@@ -253,27 +278,37 @@ var fDots = [];
 
       function capsuleBranch(top, bottom, side, cy) {
         var lane = centerX + side * 38;
+        var cRun = Math.abs(lane - centerX);
+        var cTurn = Math.max(22, Math.min(58, cRun * 1.2));
+        var cA = cTurn * 0.5;
         var p = makeEl('path', {
           d:
             'M ' + centerX + ' ' + top +
-            ' C ' + (centerX + side * 24) + ' ' + top +
-            ', ' + lane + ' ' + (top + 10) +
-            ', ' + lane + ' ' + (top + 22) +
-            ' L ' + lane + ' ' + (bottom - 22) +
-            ' C ' + lane + ' ' + (bottom - 10) +
-            ', ' + (centerX + side * 24) + ' ' + bottom +
+            ' C ' + centerX + ' ' + (top + cA) +
+            ', ' + lane + ' ' + (top + cTurn - cA) +
+            ', ' + lane + ' ' + (top + cTurn) +
+            ' L ' + lane + ' ' + (bottom - cTurn) +
+            ' C ' + lane + ' ' + (bottom - cTurn + cA) +
+            ', ' + centerX + ' ' + (bottom - cA) +
             ', ' + centerX + ' ' + bottom,
           class: 'tree-branch',
         });
         var pl = p.getTotalLength();
         p.style.strokeDasharray = String(pl);
         p.style.strokeDashoffset = String(pl);
+        var junc = makeEl('circle', {
+          cx: centerX, cy: top, r: 2.5,
+          class: 'tree-commit tree-commit-trunk',
+        });
         return {
           p: p,
-          dots: [makeEl('circle', {
-            cx: lane, cy: cy, r: 5,
-            class: 'tree-commit tree-commit-branch',
-          })],
+          dots: [
+            junc,
+            makeEl('circle', {
+              cx: lane, cy: cy, r: 5,
+              class: 'tree-commit tree-commit-branch',
+            }),
+          ],
         };
       }
 
@@ -355,7 +390,7 @@ var fDots = [];
             });
           });
         },
-        { threshold: 0.2 }
+        { threshold: 0, rootMargin: '0px 0px 400px 0px' }
       );
 
       sects.forEach(function (p) {
