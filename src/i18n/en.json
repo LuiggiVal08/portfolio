@@ -44,7 +44,6 @@
     "subtitle": "I don't sell technologies, I build results.",
     "items": [
       { "title": "SaaS", "description": "Multi-tenant products ready to scale globally." },
-      { "title": "AI", "description": "Models and agents that decide with real data." },
       { "title": "Distributed Systems", "description": "Event-driven microservices over Redis." },
       { "title": "Scalable Architectures", "description": "Hexagonal and clean architecture, decoupled by domain." },
       { "title": "APIs", "description": "Robust backends with Node.js, TypeScript and Python." }

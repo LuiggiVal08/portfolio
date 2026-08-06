@@ -23,10 +23,6 @@
       return el;
     }
 
-    function easeOutCubic(t) {
-      return 1 - Math.pow(1 - t, 3);
-    }
-
     function cluster(ys, tol) {
       ys.sort(function (a, b) { return a - b; });
       var out = [];
@@ -69,6 +65,55 @@
       var sects = [];
       var minY = Infinity;
       var maxY = -Infinity;
+      var chainSide = -1;
+      var oppTick = 0;
+
+      function oppBranch(seq, originY, segY, laneSign) {
+        var oH = 270;
+        var y0 = originY;
+        var y2 = y0 + oH;
+        var oLane = centerX + laneSign * 28;
+        var oTurn = Math.max(34, Math.min(54, 28 * 1.1));
+        var oA = oTurn * 0.5;
+        var p = makeEl('path', {
+          d:
+            'M ' + centerX + ' ' + y0 +
+            ' C ' + centerX + ' ' + (y0 + oA) +
+            ', ' + oLane + ' ' + (y0 + oTurn - oA) +
+            ', ' + oLane + ' ' + (y0 + oTurn) +
+            ' L ' + oLane + ' ' + (y2 - oTurn) +
+            ' C ' + oLane + ' ' + (y2 - oTurn + oA) +
+            ', ' + centerX + ' ' + (y2 - oA) +
+            ', ' + centerX + ' ' + y2,
+          class: 'tree-branch',
+        });
+        var pl = p.getTotalLength();
+        p.style.strokeDasharray = String(pl);
+        p.style.strokeDashoffset = String(pl);
+        var dots = [];
+        var ia = y0 + oTurn + 14;
+        var ib = y2 - oTurn - 14;
+        var span = ib - ia;
+        if (span > 30) {
+          dots.push(makeEl('circle', {
+            cx: oLane, cy: ia + span * 0.25, r: 4.5,
+            class: 'tree-commit tree-commit-branch',
+          }));
+          dots.push(makeEl('circle', {
+            cx: oLane, cy: ia + span * 0.7, r: 4.5,
+            class: 'tree-commit tree-commit-branch',
+          }));
+        }
+        dots.push(makeEl('circle', {
+          cx: centerX, cy: y2, r: 12,
+          class: 'tree-halo tree-halo-cyan',
+        }));
+        dots.push(makeEl('circle', {
+          cx: centerX, cy: y2, r: 7,
+          class: 'tree-commit tree-commit-branch tree-commit-merge tree-commit-merge-cyan',
+        }));
+        seq.push({ p: p, dots: dots, top: y0, bottom: y2, len: pl });
+      }
 
       sections.forEach(function (sec, si) {
         if (si === 0) return;
@@ -84,7 +129,77 @@
         var firstY = Infinity;
         var lastY = -Infinity;
 
-        items.forEach(function (item) {
+        if (si >= 2) {
+          var topP = Infinity;
+          var botP = -Infinity;
+          var mids = [];
+          var secDots = [];
+          var cys = [];
+          items.forEach(function (item) {
+            var r = item.getBoundingClientRect();
+            var absTop = r.top + sy;
+            var absBottom = r.bottom + sy;
+            var cy = absTop + item.offsetHeight / 2;
+            if (absTop < topP) topP = absTop;
+            if (absBottom > botP) botP = absBottom;
+            cys.push(cy);
+            if (cy < firstY) firstY = cy;
+            if (cy > lastY) lastY = cy;
+          });
+          if (topP < Infinity && botP > -Infinity) {
+            chainSide = -chainSide;
+            var cLane = centerX + chainSide * 28;
+            var cTurn = Math.max(40, Math.min(80, 28 * 1.4));
+            var cA = cTurn * 0.5;
+            var cP = makeEl('path', {
+              d:
+                'M ' + centerX + ' ' + topP +
+                ' C ' + centerX + ' ' + (topP + cA) +
+                ', ' + cLane + ' ' + (topP + cTurn - cA) +
+                ', ' + cLane + ' ' + (topP + cTurn) +
+                ' L ' + cLane + ' ' + (botP - cTurn) +
+                ' C ' + cLane + ' ' + (botP - cTurn + cA) +
+                ', ' + centerX + ' ' + (botP - cA) +
+                ', ' + centerX + ' ' + botP,
+              class: 'tree-branch tree-branch-section',
+            });
+            var cpl = cP.getTotalLength();
+            cP.style.strokeDasharray = String(cpl);
+            cP.style.strokeDashoffset = String(cpl);
+
+            secDots.push(makeEl('circle', {
+              cx: centerX, cy: topP, r: 4.5,
+              class: 'tree-commit tree-commit-branch tree-commit-origin',
+            }));
+            cys.forEach(function (y) {
+              secDots.push(makeEl('circle', {
+                cx: cLane, cy: y, r: 5,
+                class: 'tree-commit tree-commit-branch',
+              }));
+            });
+            secDots.push(makeEl('circle', {
+              cx: centerX, cy: botP, r: 12,
+              class: 'tree-halo tree-halo-cyan',
+            }));
+            secDots.push(makeEl('circle', {
+              cx: centerX, cy: botP, r: 7,
+              class: 'tree-commit tree-commit-branch tree-commit-merge tree-commit-merge-cyan',
+            }));
+
+            seq.push({ p: cP, dots: secDots, top: topP, bottom: botP, len: cpl });
+            oppTick += 1;
+            if (oppTick % 2 === 1) {
+              oppBranch(seq, topP, botP - topP, -chainSide);
+            }
+            if (topP < minY) minY = topP;
+            if (botP > maxY) maxY = botP;
+          }
+          S.appendChild(g);
+          sects.push({ sec: sec, g: g, seq: seq, firstY: firstY, lastY: lastY });
+          return;
+        }
+
+        items.forEach(function (item, idx) {
           var r = item.getBoundingClientRect();
           var absTop = r.top + sy;
           var absBottom = r.bottom + sy;
@@ -97,10 +212,11 @@
             class: 'tree-commit tree-commit-trunk',
           }));
 
+          var isArticle = item.tagName === 'ARTICLE';
           var path = null;
           var lane = null;
 
-          if (h > 110) {
+          if (h > 110 && !isArticle) {
             var side = r.left + r.width / 2 < centerX ? -1 : 1;
             var edge = side < 0 ? r.left + r.width : r.left;
             lane = edge - side * 18;
@@ -137,38 +253,38 @@
               });
             }
             if (!subs.length) subs = [cy];
+            dots.push(makeEl('circle', {
+              cx: centerX, cy: absTop, r: 4.5,
+              class: 'tree-commit tree-commit-branch tree-commit-origin',
+            }));
             subs.forEach(function (y) {
               dots.push(makeEl('circle', {
                 cx: lane, cy: y, r: 5,
                 class: 'tree-commit tree-commit-branch',
               }));
             });
+            dots.push(makeEl('circle', {
+              cx: centerX, cy: absBottom, r: 12,
+              class: 'tree-halo tree-halo-cyan',
+            }));
+            dots.push(makeEl('circle', {
+              cx: centerX, cy: absBottom, r: 7,
+              class: 'tree-commit tree-commit-branch tree-commit-merge tree-commit-merge-cyan',
+            }));
+          }
 
-            if (item.tagName === 'ARTICLE') {
-              var featSide = r.left + r.width / 2 <= centerX ? 1 : -1;
-              var fyT = absTop + 60;
-              var fyB = absBottom - 40;
-              var seg = fyB - fyT;
+          if (item.tagName === 'ARTICLE') {
+            var featSide = idx % 2 === 0 ? 1 : -1;
+            var fyT = absTop + 60;
+            var fyB = absBottom - 40;
+            var seg = fyB - fyT;
 
-              if (seg > 160) {
-                var contRect = cont.getBoundingClientRect();
-                var voxL = contRect.left;
-                var voxR = contRect.left + contRect.width;
-                var cardL = r.left;
-                var cardR = r.left + r.width;
-                var voidW = featSide > 0 ? voxR - cardR : cardL - voxL;
-
-                if (voidW < 140) {
-                  f1 = centerX + featSide * 60;
-                  f2 = centerX + featSide * 110;
-                } else {
-                  f1 = featSide > 0
-                    ? cardR + voidW * 0.16
-                    : cardL - voidW * 0.16;
-                  f2 = featSide > 0
-                    ? cardR + voidW * 0.24
-                    : cardL - voidW * 0.24;
-                }
+            if (seg > 160) {
+                var laneHalf = 88;
+                f1 = centerX + featSide * 28;
+                f1 = Math.max(centerX - laneHalf, Math.min(centerX + laneHalf, f1));
+                var f2 = centerX + featSide * 56;
+                f2 = Math.max(centerX - laneHalf, Math.min(centerX + laneHalf, f2));
 
                 // La rama y el tronco deben quedar AMBOS del mismo lado de la tarjeta.
                 // Forzar f1/f2 al lado del producto del tronco (no cruzar el tronco).
@@ -187,7 +303,7 @@
                     ' C ' + f1 + ' ' + (fyB - turnY + arcA) +
                     ', ' + centerX + ' ' + (fyB - arcA) +
                     ', ' + centerX + ' ' + fyB,
-                  class: 'tree-branch tree-branch-feature',
+                  class: 'tree-branch',
                 });
                 var mpl = mainP.getTotalLength();
                 mainP.style.strokeDasharray = String(mpl);
@@ -205,54 +321,73 @@
                   mainYs.forEach(function (y) {
                     fDots.push(makeEl('circle', {
                       cx: f1, cy: y, r: 4.5,
-                      class: 'tree-commit tree-commit-branch tree-commit-feature',
+                      class: 'tree-commit tree-commit-branch',
                     }));
                   });
                 }
 
-                seq.push({ p: mainP, dots: fDots });
+                seq.push({ p: mainP, dots: fDots, top: fyT, bottom: fyB, len: mpl });
+                oppTick += 1;
+                if (oppTick % 2 === 0) {
+                  oppBranch(seq, fyT, seg, -featSide);
+                }
 
                 fDots.push(makeEl('circle', {
-                  cx: centerX, cy: fyT, r: 3,
-                  class: 'tree-commit tree-commit-trunk',
+                  cx: centerX, cy: fyT, r: 5,
+                  class: 'tree-commit tree-commit-branch tree-commit-origin',
                 }));
                 fDots.push(makeEl('circle', {
-                  cx: centerX, cy: fyB, r: 3,
-                  class: 'tree-commit tree-commit-trunk',
+                  cx: centerX, cy: fyB, r: 13,
+                  class: 'tree-halo tree-halo-violet',
+                }));
+                fDots.push(makeEl('circle', {
+                  cx: centerX, cy: fyB, r: 8,
+                  class: 'tree-commit tree-commit-branch tree-commit-merge',
                 }));
 
-                var subYs = [fyT + seg * 0.34, fyT + seg * 0.66];
-                subYs.forEach(function (fyy) {
+                var subY = fyT + seg * 0.5;
+                var subH = 180;
+                if (fyT + turnY + subH * 0.5 <= fyB - turnY - 10) {
                   var subRun = Math.abs(f2 - f1);
                   var subTurn = Math.max(40, Math.min(84, subRun * 1.2));
                   var subA = subTurn * 0.5;
-                  var subH = 200;
                   var subP = makeEl('path', {
                     d:
-                      'M ' + f1 + ' ' + fyy +
-                      ' C ' + f1 + ' ' + (fyy + subA) +
-                      ', ' + f2 + ' ' + (fyy + subTurn - subA) +
-                      ', ' + f2 + ' ' + (fyy + subTurn) +
-                      ' L ' + f2 + ' ' + (fyy + subH - subTurn) +
-                      ' C ' + f2 + ' ' + (fyy + subH - subTurn + subA) +
-                      ', ' + f1 + ' ' + (fyy + subH - subA) +
-                      ', ' + f1 + ' ' + (fyy + subH),
-                    class: 'tree-branch tree-branch-feature tree-branch-feature-sub',
+                      'M ' + f1 + ' ' + subY +
+                      ' C ' + f1 + ' ' + (subY + subA) +
+                      ', ' + f2 + ' ' + (subY + subTurn - subA) +
+                      ', ' + f2 + ' ' + (subY + subTurn) +
+                      ' L ' + f2 + ' ' + (subY + subH - subTurn) +
+                      ' C ' + f2 + ' ' + (subY + subH - subTurn + subA) +
+                      ', ' + f1 + ' ' + (subY + subH - subA) +
+                      ', ' + f1 + ' ' + (subY + subH),
+                    class: 'tree-branch tree-branch-sub',
                   });
                   var spl = subP.getTotalLength();
+                  subP.style.strokeDasharray = String(spl);
                   subP.style.strokeDashoffset = String(spl);
                   fDots.push(makeEl('circle', {
-                    cx: f2, cy: fyy + subH / 2, r: 4,
-                    class: 'tree-commit tree-commit-branch tree-commit-feature',
+                    cx: f1, cy: subY, r: 4.5,
+                    class: 'tree-commit tree-commit-branch tree-commit-origin',
                   }));
-                  seq.push({ p: subP, dots: [] });
-                });
-
+                  fDots.push(makeEl('circle', {
+                    cx: f2, cy: subY + subH / 2, r: 4,
+                    class: 'tree-commit tree-commit-branch',
+                  }));
+                  fDots.push(makeEl('circle', {
+                    cx: f1, cy: subY + subH, r: 13,
+                    class: 'tree-halo',
+                  }));
+                  fDots.push(makeEl('circle', {
+                    cx: f1, cy: subY + subH, r: 8,
+                    class: 'tree-commit tree-commit-branch tree-commit-merge',
+                  }));
+                  seq.push({ p: subP, dots: [], top: subY, bottom: subY + subH, len: spl });
+                }
               }
             }
-          }
 
-          seq.push({ p: path, dots: dots });
+          seq.push({ p: path, dots: dots, top: absTop, bottom: absBottom, len: path ? pl : 0 });
           if (cy < firstY) firstY = cy;
           if (cy > lastY) lastY = cy;
         });
@@ -270,6 +405,9 @@
 
       heroSeq.push({
         p: null,
+        top: 30,
+        bottom: 30,
+        len: 0,
         dots: [makeEl('circle', {
           cx: centerX, cy: 30, r: 5,
           class: 'tree-commit tree-commit-trunk',
@@ -277,7 +415,7 @@
       });
 
       function capsuleBranch(top, bottom, side, cy) {
-        var lane = centerX + side * 38;
+        var lane = centerX + side * 28;
         var cRun = Math.abs(lane - centerX);
         var cTurn = Math.max(22, Math.min(58, cRun * 1.2));
         var cA = cTurn * 0.5;
@@ -296,17 +434,27 @@
         var pl = p.getTotalLength();
         p.style.strokeDasharray = String(pl);
         p.style.strokeDashoffset = String(pl);
-        var junc = makeEl('circle', {
-          cx: centerX, cy: top, r: 2.5,
-          class: 'tree-commit tree-commit-trunk',
-        });
         return {
           p: p,
+          top: top,
+          bottom: bottom,
+          len: pl,
           dots: [
-            junc,
+            makeEl('circle', {
+              cx: centerX, cy: top, r: 4.5,
+              class: 'tree-commit tree-commit-branch tree-commit-origin',
+            }),
             makeEl('circle', {
               cx: lane, cy: cy, r: 5,
               class: 'tree-commit tree-commit-branch',
+            }),
+            makeEl('circle', {
+              cx: centerX, cy: bottom, r: 12,
+              class: 'tree-halo tree-halo-cyan',
+            }),
+            makeEl('circle', {
+              cx: centerX, cy: bottom, r: 7,
+              class: 'tree-commit tree-commit-branch tree-commit-merge tree-commit-merge-cyan',
             }),
           ],
         };
@@ -321,10 +469,14 @@
       S.appendChild(heroG);
       sects.unshift({ sec: sections[0], g: heroG, seq: heroSeq });
 
-      makeEl('path', {
+      var trunkPath = makeEl('path', {
         d: 'M ' + centerX + ' 24 L ' + centerX + ' ' + (maxY + 60),
         class: 'tree-trunk',
       });
+      var trunkLen = trunkPath.getTotalLength();
+      trunkPath.style.strokeDasharray = String(trunkLen);
+      trunkPath.style.strokeDashoffset = String(trunkLen);
+      heroSeq.push({ p: trunkPath, top: 24, bottom: maxY + 60, len: trunkLen, dots: [] });
 
       function drawAll() {
         sects.forEach(function (pair) {
@@ -337,65 +489,56 @@
         });
       }
 
-      if (reduce || !('IntersectionObserver' in window)) {
+      function scrub() {
+        var vh = window.innerHeight;
+        var sy = window.scrollY;
+        var front = sy + vh * 0.55;
+        sects.forEach(function (pair) {
+          pair.seq.forEach(function (s) {
+            var h = s.bottom - s.top;
+            var p = h > 0 ? (front - s.top) / h : (front > s.top ? 1 : 0);
+            if (p < 0) p = 0;
+            if (p > 1) p = 1;
+            if (s.p) {
+              s.p.style.strokeDashoffset = String(s.len * (1 - p));
+            }
+            s.dots.forEach(function (d) {
+              var y = parseFloat(d.getAttribute('cy'));
+              if (!isFinite(y)) y = s.bottom;
+              var on;
+              if (d.classList.contains('tree-commit-merge') || d.classList.contains('tree-halo')) {
+                on = front >= s.bottom;
+              } else if (d.classList.contains('tree-commit-origin')) {
+                on = front >= y - 12;
+              } else {
+                on = front >= y;
+              }
+              d.style.opacity = on ? '1' : '0';
+            });
+          });
+        });
+      }
+
+      var ticking = false;
+      function onScroll() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(function () {
+          scrub();
+          ticking = false;
+        });
+      }
+
+      if (reduce) {
         sects.forEach(function (p) {
           p.g.classList.add('in-view');
         });
         drawAll();
-        return;
+      } else {
+        window.removeEventListener('scroll', onScroll);
+        window.addEventListener('scroll', onScroll, { passive: true });
+        scrub();
       }
-
-      var obs = new IntersectionObserver(
-        function (entries) {
-          entries.forEach(function (en) {
-            if (!en.isIntersecting) return;
-            var hit = null;
-            sects.forEach(function (p) {
-              if (p.sec === en.target) hit = p;
-            });
-            if (!hit) return;
-            hit.g.classList.add('in-view');
-            obs.unobserve(en.target);
-
-            hit.seq.forEach(function (s, i) {
-              if (s.p) {
-                setTimeout(function () {
-                  var from = parseFloat(s.p.style.strokeDashoffset);
-                  var start = null;
-                  function tick(now) {
-                    if (start === null) start = now;
-                    var t = Math.min(1, (now - start) / 800);
-                    s.p.style.strokeDashoffset = String(from * (1 - easeOutCubic(t)));
-                    if (t < 1) {
-                      requestAnimationFrame(tick);
-                    } else {
-                      s.dots.forEach(function (d, j) {
-                        setTimeout(function () {
-                          d.style.opacity = '1';
-                        }, 100 + j * 110);
-                      });
-                    }
-                  }
-                  requestAnimationFrame(tick);
-                }, i * 140);
-              } else {
-                setTimeout(function () {
-                  s.dots.forEach(function (d, j) {
-                    setTimeout(function () {
-                      d.style.opacity = '1';
-                    }, j * 90);
-                  });
-                }, i * 140);
-              }
-            });
-          });
-        },
-        { threshold: 0, rootMargin: '0px 0px 400px 0px' }
-      );
-
-      sects.forEach(function (p) {
-        obs.observe(p.sec);
-      });
     }
 
     build();

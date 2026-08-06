@@ -10,7 +10,7 @@
   --color-ink-800: #10132a;
   --color-ink-700: #1a1f3d;
 
-  --color-cyan-glow: #22d3ee;
+  --color-cyan-glow: #06b6d4;
   --color-violet-glow: #a78bfa;
 
   --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
@@ -67,14 +67,20 @@
   }
 
   @media (min-width: 80rem) {
-    .zigzag > * {
+    .zigzag > :not(article) {
       width: calc(50% - 56px);
     }
-    .zigzag > *:nth-child(odd) {
+    .zigzag > article {
+      width: 100%;
+    }
+    .zigzag > article:nth-child(odd) {
       margin-right: auto;
     }
-    .zigzag > *:nth-child(even) {
+    .zigzag > article:nth-child(even) {
       margin-left: auto;
+    }
+    .zigzag:has(> .tree-col) > .tree-col {
+      width: 100%;
     }
   }
 
@@ -248,11 +254,12 @@
 /* ── Terminal cursor ───────────────────────── */
 .cursor {
   display: inline-block;
-  width: 0.55em;
-  height: 1.05em;
-  margin-left: 2px;
-  vertical-align: text-bottom;
-  background: var(--color-cyan-glow);
+  width: 0;
+  height: 0.85em;
+  margin-left: 3px;
+  vertical-align: baseline;
+  transform: translateY(0.1em);
+  border-left: 2px solid var(--color-cyan-glow);
   animation: cursor-blink 1.15s steps(2, start) infinite;
 }
 
@@ -293,19 +300,21 @@
 
 .tree-branch {
   stroke: color-mix(in srgb, var(--color-cyan-glow) 55%, transparent);
-  stroke-width: 2;
+  stroke-width: 1.5;
+}
+
+.tree-branch-sub {
+  stroke: color-mix(in srgb, var(--color-violet-glow) 60%, transparent);
 }
 
 .tree-branch-feature {
-  stroke: color-mix(in srgb, var(--color-cyan-glow) 85%, transparent);
+  stroke: var(--color-cyan-glow);
   stroke-width: 2.5;
-  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-cyan-glow) 45%, transparent));
 }
 
 .tree-branch-feature-sub {
-  stroke: color-mix(in srgb, var(--color-violet-glow) 90%, transparent);
+  stroke: var(--color-violet-glow);
   stroke-width: 2.5;
-  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-violet-glow) 45%, transparent));
 }
 
 .tree-commit {
@@ -330,6 +339,34 @@
 .tree-commit-feature {
   stroke: var(--color-cyan-glow);
   stroke-width: 2;
+}
+
+.tree-commit-merge {
+  fill: var(--color-violet-glow);
+  stroke: var(--color-violet-glow);
+  stroke-width: 2;
+}
+
+.tree-commit-merge-cyan {
+  fill: var(--color-cyan-glow);
+  stroke: var(--color-cyan-glow);
+}
+
+.tree-commit-origin {
+  fill: var(--color-cyan-glow);
+  stroke: var(--color-cyan-glow);
+  stroke-width: 2;
+}
+
+.tree-halo {
+  fill: color-mix(in srgb, var(--color-violet-glow) 16%, transparent);
+  stroke: none;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+
+.tree-halo-cyan {
+  fill: color-mix(in srgb, var(--color-cyan-glow) 16%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {

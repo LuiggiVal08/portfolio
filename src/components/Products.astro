@@ -29,8 +29,8 @@ const projects = allProjects
 
     {
       projects.map((project, i) => (
-          <article id={project.slug} class="mt-20 grid gap-10 first:mt-0 lg:grid-cols-2 lg:gap-14 xl:grid-cols-1" data-reveal data-tree-anchor>
-            <div class="flex flex-col">
+          <article id={project.slug} class={`mt-20 grid gap-10 first:mt-0 lg:grid-cols-2 lg:gap-14 xl:grid-cols-[1fr_11rem_1fr] xl:grid-flow-dense`} data-reveal data-tree-anchor>
+            <div class={`flex flex-col ${i % 2 === 1 ? 'xl:col-start-3' : 'xl:col-start-1'}`}>
               <div class="mb-3 flex items-center justify-between gap-3">
                 <span class="font-mono text-xs uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
                   {String(i + 1).padStart(2, '0')} / {ui.products.kicker}
@@ -131,7 +131,7 @@ const projects = allProjects
               </div>
             </div>
 
-            <div class="flex flex-col">
+            <div class={`flex flex-col ${i % 2 === 1 ? 'xl:col-start-1' : 'xl:col-start-3'}`}>
               <h4 class="mb-3 font-mono text-xs font-medium uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
                 {ui.products.architecture}
               </h4>

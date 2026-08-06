@@ -4,9 +4,7 @@ import Hero from '../../components/Hero.astro';
 import Products from '../../components/Products.astro';
 import Mission from '../../components/Mission.astro';
 import Capabilities from '../../components/Capabilities.astro';
-import OpenSource from '../../components/OpenSource.astro';
 import Founder from '../../components/Founder.astro';
-import Contact from '../../components/Contact.astro';
 import { getUI } from '../../i18n';
 
 const ui = getUI('en');
@@ -21,8 +19,6 @@ const ui = getUI('en');
   <Hero ui={ui} />
   <Products ui={ui} lang="en" />
   <Mission ui={ui} />
-  <Capabilities ui={ui} />
-  <OpenSource ui={ui} lang="en" />
+  <Capabilities ui={ui} lang="en" />
   <Founder ui={ui} />
-  <Contact ui={ui} />
 </BaseLayout>

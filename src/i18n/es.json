@@ -44,7 +44,6 @@
     "subtitle": "No compro tecnologías, construyo resultados.",
     "items": [
       { "title": "SaaS", "description": "Productos multi-tenant listos para crecer a nivel global." },
-      { "title": "IA", "description": "Modelos y agentes que deciden con datos reales." },
       { "title": "Sistemas Distribuidos", "description": "Microservicios event-driven sobre Redis." },
       { "title": "Arquitecturas Escalables", "description": "Hexagonal y clean architecture, desacopladas por dominio." },
       { "title": "APIs", "description": "Backends robustos con Node.js, TypeScript y Python." }
