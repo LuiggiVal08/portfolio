@@ -17,7 +17,7 @@ const { lang, title, description, ui } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const home = base.endsWith('/') ? base : `${base}/`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
-const ogImage = new URL(`${home}favicon.svg`, Astro.site);
+const ogImage = new URL(`${home}og.png`, Astro.site);
 const hrefLang = lang === 'es' ? 'es' : 'en';
 ---
 
@@ -42,7 +42,8 @@ const hrefLang = lang === 'es' ? 'es' : 'en';
     <meta property="og:locale" content={hrefLang === 'es' ? 'es_VE' : 'en_US'} />
     <meta property="og:locale:alternate" content={hrefLang === 'es' ? 'en_US' : 'es_VE'} />
     <meta property="og:image" content={ogImage} />
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImage} />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

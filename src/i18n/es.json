@@ -72,7 +72,9 @@
     "title": "¿Trabajamos juntos?",
     "subtitle": "Escríbele a Luis, fundador de ODALX. Respondo rápido.",
     "githubCta": "Seguir en GitHub",
-    "handle": "LuiggiVal08"
+    "emailCta": "Escríbeme",
+    "handle": "LuiggiVal08",
+    "email": "luicciano.08.angel.2002@gmail.com"
   },
   "footer": {
     "statement": "Construido con JavaScript, pensado en grande.",

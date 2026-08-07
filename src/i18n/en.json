@@ -72,7 +72,9 @@
     "title": "Let's work together?",
     "subtitle": "Write to Luis, founder of ODALX. I reply fast.",
     "githubCta": "Follow on GitHub",
-    "handle": "LuiggiVal08"
+    "emailCta": "Email me",
+    "handle": "LuiggiVal08",
+    "email": "luicciano.08.angel.2002@gmail.com"
   },
   "footer": {
     "statement": "Built with JavaScript, engineered to scale.",

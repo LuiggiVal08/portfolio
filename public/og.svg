@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a0c1a"/>
+      <stop offset="1" stop-color="#05060f"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#06b6d4"/>
+      <stop offset="1" stop-color="#a78bfa"/>
+    </linearGradient>
+    <radialGradient id="glowC" cx="18%" cy="-5%" r="60%">
+      <stop offset="0" stop-color="#06b6d4" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#06b6d4" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowV" cx="85%" cy="115%" r="60%">
+      <stop offset="0" stop-color="#a78bfa" stop-opacity="0.20"/>
+      <stop offset="1" stop-color="#a78bfa" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glowC)"/>
+  <rect width="1200" height="630" fill="url(#glowV)"/>
+
+  <g stroke="#06b6d4" stroke-opacity="0.5" stroke-width="1.5" fill="none">
+    <path d="M 600 90 C 600 110, 470 120, 470 140 L 470 180 C 470 200, 600 210, 600 230"/>
+    <circle cx="600" cy="90" r="5" fill="#06b6d4" stroke="none"/>
+    <circle cx="470" cy="160" r="4" fill="#06b6d4" stroke="none"/>
+    <circle cx="600" cy="230" r="8" fill="#06b6d4" stroke="none"/>
+  </g>
+  <g stroke="#a78bfa" stroke-opacity="0.6" stroke-width="1.5" fill="none">
+    <path d="M 600 230 C 600 250, 730 260, 730 280 L 730 320 C 730 340, 600 350, 600 370"/>
+    <circle cx="730" cy="300" r="4" fill="#a78bfa" stroke="none"/>
+    <circle cx="600" cy="370" r="8" fill="#a78bfa" stroke="none"/>
+  </g>
+  <path d="M 600 370 L 600 540" stroke="#06b6d4" stroke-opacity="0.4" stroke-width="1.5" fill="none"/>
+
+  <text x="600" y="430" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="26" letter-spacing="8" fill="#06b6d4">LABORATORIO DE SOFTWARE</text>
+  <text x="600" y="520" text-anchor="middle" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="96" letter-spacing="-2" fill="#ffffff">ODALX<span fill="url(#accent)">.</span></text>
+
+  <rect x="0" y="600" width="1200" height="30" fill="url(#accent)" opacity="0.9"/>
+</svg>

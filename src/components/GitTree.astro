@@ -68,7 +68,7 @@
       var chainSide = -1;
       var oppTick = 0;
 
-      function oppBranch(seq, originY, segY, laneSign) {
+      function oppBranch(seq, originY, laneSign) {
         var oH = 270;
         var y0 = originY;
         var y2 = y0 + oH;
@@ -189,7 +189,7 @@
             seq.push({ p: cP, dots: secDots, top: topP, bottom: botP, len: cpl });
             oppTick += 1;
             if (oppTick % 2 === 1) {
-              oppBranch(seq, topP, botP - topP, -chainSide);
+              oppBranch(seq, topP, -chainSide);
             }
             if (topP < minY) minY = topP;
             if (botP > maxY) maxY = botP;
@@ -329,7 +329,7 @@
                 seq.push({ p: mainP, dots: fDots, top: fyT, bottom: fyB, len: mpl });
                 oppTick += 1;
                 if (oppTick % 2 === 0) {
-                  oppBranch(seq, fyT, seg, -featSide);
+                  oppBranch(seq, fyT, -featSide);
                 }
 
                 fDots.push(makeEl('circle', {
